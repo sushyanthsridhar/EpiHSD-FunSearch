@@ -1,0 +1,88 @@
+
+DENGUE SINDY AUTOENCODER  -  FEATURE AND LATENT SPACE ANALYSIS
+================================================================
+Data:  14,976 weekly rows,  31 features,  32 provinces,  2015-2023
+Latent: 224 province-year points (train+val),  3 dimensions
+
+LATENT DIMENSION INTERPRETATIONS
+---------------------------------
+z1  (urbanisation axis)
+  Top positive correlates: ['n_neighbors', 'population', 'avg_humidity']
+  Top negative correlates: ['cooling_degree_days', 'avg_temp', 'consecutive_dry_weeks']
+  Interpretation: Separates large dense cities (Santo Domingo z1=+3.17)
+  from small coastal/rural provinces (Monte Cristi z1=-2.74).
+  The autoencoder learned urban vs rural epidemic structure without
+  being explicitly told about population density.
+
+z2  (climate and ENSO axis)
+  Top positive correlates: ['diurnal_temp_range', 'max_temp', 'dI_dt_norm']
+  Top negative correlates: ['min_humidity', 'dew_point_temp', 'min_temp']
+  Interpretation: Captures the humidity and ENSO signal.
+  High z2 = wetter, La Nina conditions.
+  Low z2  = drier, El Nino conditions.
+  COUNTERINTUITIVE: z2 negatively correlates with cases (r ~ -0.73).
+  Drier El Nino years (low z2) had MORE dengue (2015, 2019).
+  Hypothesis: El Nino concentrates breeding sites into smaller
+  isolated pools, intensifying transmission despite lower rainfall.
+
+z3  (regional geography axis)
+  Top positive correlates: ['neighbor_incidence_lag0', 'neighbor_incidence_lag1', 'neighbor_incidence_lag2']
+  Top negative correlates: ['soi_index', 'tna_sst_anom', 'extreme_rainfall_binary']
+  Interpretation: Separates the wet Cibao valley interior (high z3)
+  from the dry southwestern desert border provinces (low z3).
+  Pedernales and Independencia consistently have lowest z3.
+
+HIGHLY CORRELATED FEATURE PAIRS (r > 0.85)
+--------------------------------------------
+  avg_temp  <->  cooling_degree_days  :  r = 1.0
+  dI_dt  <->  dI_dt_norm  :  r = 0.905
+  neighbor_incidence_lag0  <->  neighbor_incidence_lag1  :  r = 0.903
+  neighbor_incidence_lag1  <->  neighbor_incidence_lag2  :  r = 0.903
+  avg_rainfall  <->  max_rainfall  :  r = 0.899
+
+KEY BIOLOGICAL FINDINGS
+------------------------
+1. SEASONAL PEAK
+   Dengue peaks consistently around week 36 across all years
+   and provinces. This aligns with the post-rainy-season lag when
+   stagnant water pools support Aedes aegypti breeding.
+
+2. EL NINO PARADOX
+   Correlation between Nino3.4 and annual cases: r = 0.495
+   Positive correlation means El Nino years (warmer, drier) had
+   MORE dengue, not less. This likely reflects concentrated breeding
+   sites in isolated pools during dry conditions.
+
+3. SPATIAL SPILLOVER IS STRONG
+   Neighbor incidence lag1 vs current incidence: r = 0.621
+   The strongest predictor of current week cases is what the
+   neighboring provinces had last week. This confirms cross-province
+   dengue transmission is a major driver of outbreak spread.
+
+4. SCHOOL CALENDAR EFFECT
+   Correlation school_calendar_active vs incidence: r = -0.0340
+   Negative: cases lower during school terms.
+   
+
+5. URBAN VS RURAL DYNAMICS (z1 axis)
+   Santo Domingo (z1 = +3.17) and Santiago (z1 = +0.76) form a
+   clearly separate cluster from all other provinces. Their outbreak
+   curves have a fundamentally different shape, not just higher
+   magnitude. Urban dengue dynamics are structurally distinct.
+
+6. CIBAO VALLEY 2018 ANOMALY
+   The five highest z3 values all belong to 2018 in Cibao valley
+   provinces (Maria Trinidad Sanchez, Sanchez Ramirez, Duarte,
+   Monsenor Nouel, Hermanas Mirabal). Something unusual happened
+   in the interior agricultural belt in 2018 worth investigating.
+
+FILES PRODUCED
+--------------
+  1_correlation_heatmap.png        feature cross-correlations
+  2_feature_vs_incidence.png       what predicts case counts
+  3_feature_vs_latent.png          what drives each latent dim
+  4_feature_importance_gradient.png encoder gradient attribution
+  5_province_profiles.png          province positions in latent space
+  6_year_trends.png                climate, ENSO, cases over years
+  7_outlier_analysis.png           extreme province-years explained
+  8_biology_insights.png           key findings visualised

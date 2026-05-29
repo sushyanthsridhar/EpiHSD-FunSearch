@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LaTeX Editor</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#1e1e2e;--toolbar:#161625;--editor-bg:#1a1a2e;--editor-text:#cdd6f4;
+  --border:#313244;--accent:#89b4fa;--accent2:#cba6f7;--green:#a6e3a1;
+  --red:#f38ba8;--yellow:#f9e2af;--page:#fff;--preview-bg:#e8e8e8;
+  --font-mono:'JetBrains Mono','Fira Code','Courier New',monospace;
+}
+html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
+body{display:flex;flex-direction:column;background:var(--bg);color:var(--editor-text);}
+
+/* ── TOOLBAR ── */
+.toolbar{
+  background:var(--toolbar);border-bottom:1px solid var(--border);
+  padding:0 14px;height:44px;display:flex;align-items:center;gap:10px;
+  flex-shrink:0;user-select:none;
+}
+.dots{display:flex;gap:6px;align-items:center;}
+.dot{width:12px;height:12px;border-radius:50%;}
+.dot-r{background:#ff5f57;}.dot-y{background:#febc2e;}.dot-g{background:#28c840;}
+.app-title{font-size:13px;font-weight:600;color:#cdd6f4;margin-left:4px;letter-spacing:0.3px;}
+.sep{width:1px;height:24px;background:var(--border);margin:0 4px;}
+.btn{
+  background:transparent;border:1px solid var(--border);color:#cdd6f4;
+  padding:4px 11px;border-radius:5px;font-size:11.5px;cursor:pointer;
+  transition:all 0.15s;white-space:nowrap;
+}
+.btn:hover{background:rgba(137,180,250,0.12);border-color:var(--accent);color:var(--accent);}
+.btn.primary{background:rgba(137,180,250,0.15);border-color:var(--accent);color:var(--accent);}
+.btn.primary:hover{background:rgba(137,180,250,0.28);}
+.btn.danger:hover{border-color:var(--red);color:var(--red);}
+#filename-display{
+  font-family:var(--font-mono);font-size:11px;color:#6c7086;
+  border:1px solid transparent;padding:3px 8px;border-radius:4px;
+  cursor:text;min-width:160px;
+}
+#filename-display:hover{border-color:var(--border);}
+#filename-display:focus{outline:none;border-color:var(--accent);color:var(--editor-text);background:rgba(137,180,250,0.05);}
+.status-dot{width:7px;height:7px;border-radius:50%;background:var(--green);flex-shrink:0;}
+.status-dot.dirty{background:var(--yellow);}
+.status-dot.error{background:var(--red);}
+#status-text{font-size:11px;color:#6c7086;min-width:80px;}
+.toolbar-right{margin-left:auto;display:flex;align-items:center;gap:8px;}
+#render-time{font-size:10px;color:#45475a;}
+
+/* ── MAIN SPLIT ── */
+.main{display:flex;flex:1;overflow:hidden;}
+.pane{display:flex;flex-direction:column;overflow:hidden;}
+.pane-editor{width:50%;border-right:2px solid var(--border);background:var(--editor-bg);}
+.pane-preview{width:50%;background:var(--preview-bg);}
+
+/* ── RESIZER ── */
+.resizer{
+  width:4px;background:var(--border);cursor:col-resize;flex-shrink:0;
+  transition:background 0.15s;position:relative;z-index:10;
+}
+.resizer:hover,.resizer.dragging{background:var(--accent);}
+
+/* ── PANE HEADER ── */
+.pane-header{
+  padding:6px 14px;background:var(--toolbar);border-bottom:1px solid var(--border);
+  font-size:11px;color:#6c7086;display:flex;align-items:center;gap:8px;flex-shrink:0;
+}
+.pane-header .pill{
+  background:rgba(137,180,250,0.1);color:var(--accent);
+  padding:1px 7px;border-radius:10px;font-size:10px;font-weight:600;
+}
+.pane-header .pill.green{background:rgba(166,227,161,0.1);color:var(--green);}
+#line-col{margin-left:auto;font-family:var(--font-mono);font-size:10px;}
+
+/* ── EDITOR ── */
+#editor{
+  flex:1;width:100%;background:var(--editor-bg);color:var(--editor-text);
+  border:none;outline:none;resize:none;padding:18px 20px;
+  font-family:var(--font-mono);font-size:13px;line-height:1.7;
+  tab-size:2;-moz-tab-size:2;
+}
+#editor::placeholder{color:#45475a;}
+#editor::selection{background:rgba(137,180,250,0.25);}
+
+/* ── PREVIEW ── */
+.preview-scroll{flex:1;overflow-y:auto;padding:24px 18px;}
+.page{
+  background:var(--page);max-width:640px;margin:0 auto;
+  padding:60px 70px;min-height:800px;
+  box-shadow:0 2px 14px rgba(0,0,0,0.25);
+  color:#222;
+}
+
+/* ── LATEX DOC STYLES (inside .page) ── */
+.page p{margin:.5em 0;line-height:1.65;font-size:11pt;text-align:justify;font-family:Georgia,'Times New Roman',serif;}
+.page .doc-title{text-align:center;font-size:17pt;font-weight:bold;margin-bottom:5px;font-family:Georgia,serif;}
+.page .doc-author{text-align:center;font-size:11pt;font-family:Georgia,serif;margin:3px 0;}
+.page .doc-date{text-align:center;font-size:10pt;color:#666;font-family:Georgia,serif;}
+.page .title-rule{border:none;border-top:1px solid #ccc;margin:13px 0 16px;}
+.page .abstract-env{margin:14px 42px;}
+.page .abstract-title{text-align:center;font-size:10.5pt;font-weight:bold;margin-bottom:5px;font-family:Georgia,serif;}
+.page .abstract-env p{font-size:10pt;font-family:Georgia,serif;}
+.page .sec-1{font-size:13.5pt;font-weight:bold;margin:20px 0 6px;border-bottom:1px solid #ccc;padding-bottom:3px;font-family:Georgia,serif;}
+.page .sec-2{font-size:12pt;font-weight:bold;margin:14px 0 5px;font-family:Georgia,serif;}
+.page .sec-3{font-size:11pt;font-weight:bold;font-style:italic;margin:10px 0 4px;font-family:Georgia,serif;}
+.page .sec-num{margin-right:5px;}
+.page .mi{font-style:italic;font-family:Georgia,serif;}
+.page .md{display:block;text-align:center;margin:13px 0;font-style:italic;font-family:Georgia,serif;overflow-x:auto;}
+.page .frac{display:inline-block;text-align:center;vertical-align:middle;line-height:1.1;margin:0 2px;}
+.page .fn{display:block;border-bottom:1px solid;padding:0 3px 1px;font-size:.86em;}
+.page .fd{display:block;padding:1px 3px 0;font-size:.86em;}
+.page .sq-c{text-decoration:overline;}
+.page .big-op{font-size:1.4em;vertical-align:middle;line-height:1;display:inline-block;}
+.page .op-wr{display:inline-block;text-align:center;vertical-align:middle;line-height:1;}
+.page .op-lim{display:block;font-size:.62em;line-height:1.3;font-style:normal;}
+.page .big-del{font-size:1.45em;vertical-align:middle;line-height:1;}
+.page sup,.page sub{font-size:.70em;line-height:0;position:relative;vertical-align:baseline;}
+.page sup{top:-.48em;}.page sub{top:.32em;}
+.page .align-tbl{display:table;margin:13px auto;font-style:italic;font-family:Georgia,serif;}
+.page .align-row{display:table-row;}
+.page .align-l{display:table-cell;text-align:right;padding:2px 1px 2px 0;}
+.page .align-r{display:table-cell;text-align:left;padding:2px 0 2px 1px;}
+.page ul.ll,.page ol.ll{margin:6px 0 6px 28px;font-family:Georgia,serif;}
+.page ul.ll li,.page ol.ll li{margin:3px 0;line-height:1.55;font-size:11pt;}
+.page .thm-env{margin:10px 0;padding:7px 11px;border-left:3px solid #2c3e50;}
+.page .thm-lbl{font-weight:bold;margin-right:4px;font-family:Georgia,serif;}
+.page .pf-env{margin:8px 0;padding:5px 11px;}
+.page .pf-lbl{font-style:italic;font-weight:bold;margin-right:4px;font-family:Georgia,serif;}
+.page .qed{float:right;font-size:12pt;line-height:1;}
+.page table.mx{border-collapse:collapse;display:inline-table;vertical-align:middle;}
+.page table.mx td{padding:2px 6px;text-align:center;font-style:italic;font-family:Georgia,serif;}
+.page pre.vb{font-family:'Courier New',monospace;font-size:8pt;background:#f5f5f5;border:1px solid #ddd;padding:9px 11px;border-radius:3px;overflow-x:auto;white-space:pre-wrap;font-style:normal;margin:9px 0;}
+.page .hrule{border:none;border-top:1px solid #ccc;margin:13px 0;}
+.page .tabular-wrap{overflow-x:auto;width:100%;margin:9px 0;}
+.page table.tabular{border-collapse:collapse;margin:0 auto;font-family:Georgia,serif;font-size:10pt;}
+.page table.tabular td,.page table.tabular th{padding:4px 10px;font-size:10pt;vertical-align:top;}
+.page table.tabular tr.rule-top td{border-top:2px solid #222;}
+.page table.tabular tr.rule-mid td{border-top:1px solid #888;}
+.page table.tabular tr.rule-bot td{border-bottom:2px solid #222;}
+.page .fig-wrap{text-align:center;margin:18px 0;padding:0;}
+.page .fig-wrap img{max-width:100%;height:auto;display:block;margin:0 auto 8px;}
+.page .fig-caption{font-size:9.5pt;color:#444;font-family:Georgia,serif;text-align:justify;margin-top:6px;}
+.page .cases-wrap{display:inline-block;vertical-align:middle;}
+.page .cases-row{display:block;}
+.page blockquote{margin:10px 22px;font-style:italic;font-family:Georgia,serif;}
+
+/* ── ERROR OVERLAY ── */
+.render-error{padding:16px;background:#2a1a1a;border:1px solid var(--red);border-radius:6px;margin:12px;font-family:var(--font-mono);font-size:11px;color:var(--red);}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:8px;height:8px;}
+::-webkit-scrollbar-track{background:var(--editor-bg);}
+::-webkit-scrollbar-thumb{background:#45475a;border-radius:4px;}
+::-webkit-scrollbar-thumb:hover{background:#585b70;}
+.preview-scroll::-webkit-scrollbar-track{background:var(--preview-bg);}
+
+/* ── MODAL ── */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;align-items:center;justify-content:center;}
+.modal-bg.open{display:flex;}
+.modal{background:#1e1e2e;border:1px solid var(--border);border-radius:10px;padding:24px;min-width:340px;max-width:480px;}
+.modal h3{font-size:14px;margin-bottom:14px;color:var(--accent);}
+.modal p{font-size:12px;line-height:1.6;color:#a6adc8;margin-bottom:16px;}
+.modal kbd{background:#313244;padding:1px 6px;border-radius:3px;font-family:var(--font-mono);font-size:11px;color:#cdd6f4;}
+.modal .modal-btns{display:flex;gap:8px;justify-content:flex-end;margin-top:6px;}
+</style>
+</head>
+<body>
+
+<!-- ═══════ TOOLBAR ═══════ -->
+<div class="toolbar">
+  <div class="dots">
+    <div class="dot dot-r"></div>
+    <div class="dot dot-y"></div>
+    <div class="dot dot-g"></div>
+  </div>
+  <span class="app-title">LaTeX Editor</span>
+  <div class="sep"></div>
+  <button class="btn" onclick="newDoc()" title="New document">New</button>
+  <button class="btn" onclick="loadFile()" title="Open .tex file">Open</button>
+  <button class="btn primary" onclick="saveFile()" title="Save as .tex">Save ↓</button>
+  <input type="file" id="file-input" accept=".tex,.txt" style="display:none" onchange="onFileLoaded(event)">
+  <div class="sep"></div>
+  <input id="filename-display" value="document.tex" spellcheck="false" title="Filename">
+  <div class="sep"></div>
+  <div class="status-dot" id="status-dot"></div>
+  <span id="status-text">Ready</span>
+  <div class="toolbar-right">
+    <span id="render-time"></span>
+    <button class="btn" onclick="showHelp()" title="Help">?</button>
+  </div>
+</div>
+
+<!-- ═══════ MAIN ═══════ -->
+<div class="main" id="main">
+
+  <!-- Editor pane -->
+  <div class="pane pane-editor" id="pane-editor">
+    <div class="pane-header">
+      <span class="pill">LaTeX Source</span>
+      <span id="line-col">Ln 1, Col 1</span>
+    </div>
+    <textarea id="editor" spellcheck="false" autocomplete="off"
+      placeholder="% Start writing LaTeX here...&#10;\documentclass{article}&#10;\begin{document}&#10;Hello, world!&#10;\end{document}"
+    ></textarea>
+  </div>
+
+  <!-- Resizer -->
+  <div class="resizer" id="resizer"></div>
+
+  <!-- Preview pane -->
+  <div class="pane pane-preview" id="pane-preview">
+    <div class="pane-header">
+      <span class="pill green">Preview</span>
+      <span style="margin-left:auto;font-size:10px;color:#6c7086">Live rendering</span>
+    </div>
+    <div class="preview-scroll">
+      <div class="page" id="preview-page"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ HELP MODAL ═══════ -->
+<div class="modal-bg" id="help-modal">
+  <div class="modal">
+    <h3>📄 LaTeX Editor — Quick Reference</h3>
+    <p>
+      <b>Working with Claude (Cowork):</b><br>
+      Open Cowork, describe what you want in plain English. Claude will edit your <kbd>.tex</kbd> file directly in your project folder. Reload this page to see the changes.<br><br>
+      <b>Keyboard shortcuts:</b><br>
+      <kbd>Tab</kbd> → insert 2 spaces &nbsp;
+      <kbd>Ctrl/⌘ S</kbd> → save .tex file<br><br>
+      <b>Supported:</b> <code>$...$</code> inline math, <code>$$...$$</code> display math,
+      <code>\frac</code>, <code>\sqrt</code>, <code>\sum \int \prod</code> with limits,
+      Greek letters, <code>\begin{align}</code>, <code>\begin{theorem}</code>,
+      matrices, lists, sections, and more.<br><br>
+      <b>Auto-save:</b> Your work is saved to <kbd>localStorage</kbd> every keystroke.
+      Use <b>Save ↓</b> to export as a <kbd>.tex</kbd> file.
+    </p>
+    <div class="modal-btns">
+      <button class="btn primary" onclick="closeHelp()">Got it</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// DEFAULT DOCUMENT
+// ═══════════════════════════════════════════════════════════════
+const DEFAULT_DOC = `\\documentclass{article}
+\\usepackage{graphicx}
+\\usepackage{booktabs}
+\\usepackage{amsmath}
+\\usepackage{geometry}
+\\geometry{margin=1in}
+
+\\title{Epidemiological Time-Series Analysis of Disease Burden\\\\
+Across Dominican Republic Provinces, 2015--2023}
+\\author{Your Name}
+\\date{\\today}
+
+\\begin{document}
+\\maketitle
+
+\\begin{abstract}
+We present a comprehensive statistical characterisation of weekly disease case
+counts across all 32 provinces of the Dominican Republic over a nine-year
+surveillance window (2015--2023). Using 14,976 province-week records totalling
+78,664 cases, we quantify autoregressive structure, seasonal dynamics,
+inter-provincial similarity, and signal quality. All 32 provinces exhibit
+strong autoregressive memory (AR(1) $R^2 > 0.10$) and clear annual seasonality
+(seasonal ratio $> 1.5$), with October as the dominant peak month in 19 of 32
+provinces. A composite shape score confirms that 22 provinces (69\\%) produce
+Tier-1 Excellent signals suitable for data-driven equation discovery (SINDy,
+FunSearch), with the remaining 10 provinces rated Tier-2 Good. These results
+establish a robust empirical foundation for province-level dynamical modelling
+of vector-borne transmission in the Caribbean.
+\\end{abstract}
+
+\\section{Results}
+
+\\subsection{Dataset Overview}
+
+Weekly case counts were compiled for all 32 provinces of the Dominican Republic
+spanning January 2015 through December 2023, yielding 468 weekly observations
+per province and a combined total of 14,976 province-week records. Across this
+period, 78,664 cases were recorded in aggregate (Figure~\\ref{fig:all_provinces}).
+Province-level totals ranged from 271 cases (Pedernales) to 21,596 cases (Santo
+Domingo), spanning nearly two orders of magnitude and reflecting substantial
+heterogeneity in disease burden driven by population density and urbanisation.
+
+\\begin{figure}[h]
+\\centering
+\\includegraphics[width=\\textwidth]{data_processing/demographics/plots/00_ALL_PROVINCES.png}
+\\caption{Weekly case time series for all 32 Dominican Republic provinces
+(2015--2023). Each panel displays raw weekly case counts; vertical dotted
+lines mark calendar year boundaries. Panels are ordered by province code.}
+\\label{fig:all_provinces}
+\\end{figure}
+
+\\subsection{Provincial Disease Burden}
+
+The three highest-burden provinces --- Santo Domingo (21,596 cases), Santiago
+(9,223), and Distrito Nacional (7,268) --- collectively accounted for
+approximately 48.4\\% of all recorded cases, consistent with their status as
+the most densely urbanised regions in the country. Table~\\ref{tab:basic_stats}
+summarises key descriptive statistics for the ten highest-burden provinces.
+
+\\begin{table}[h]
+\\centering
+\\caption{Descriptive statistics for the ten highest-burden provinces.
+CV = coefficient of variation; Zero\\% = percentage of weeks with zero
+reported cases.}
+\\label{tab:basic_stats}
+\\begin{tabular}{lrrrrr}
+\\toprule
+Province & Total Cases & Mean (wk) & Std (wk) & CV & Zero\\% \\\\
+\\midrule
+Santo Domingo      & 21,596 & 46.15 & 78.21 & 1.70 &  4.1 \\\\
+Santiago           &  9,223 & 19.71 & 28.33 & 1.44 &  7.3 \\\\
+Distrito Nacional  &  7,268 & 15.53 & 25.26 & 1.63 & 10.7 \\\\
+San Crist\\'obal   &  3,649 &  7.80 & 12.74 & 1.63 & 20.1 \\\\
+La Vega            &  3,339 &  7.13 & 12.54 & 1.76 & 27.6 \\\\
+Barahona           &  2,530 &  5.41 &  8.26 & 1.53 & 25.4 \\\\
+Duarte             &  2,235 &  4.78 &  7.84 & 1.64 & 37.4 \\\\
+S\\'anchez Ram\\'irez & 2,172 & 4.64 &  8.39 & 1.81 & 35.3 \\\\
+Puerto Plata       &  2,027 &  4.33 &  6.83 & 1.58 & 32.7 \\\\
+Azua               &  1,917 &  4.10 &  6.14 & 1.50 & 31.4 \\\\
+\\bottomrule
+\\end{tabular}
+\\end{table}
+
+Coefficients of variation exceeded 1.4 across all provinces and reached as
+high as 3.02 in La Romana, indicating strongly overdispersed weekly count
+distributions throughout the country. The fraction of zero-case weeks ranged
+from 4.1\\% (Santo Domingo) to 70.7\\% (Pedernales), underscoring the stark
+difference in signal density between high- and low-burden settings.
+
+\\subsection{Signal Quality and Suitability for Dynamical Modelling}
+
+A composite shape score (0--100) was computed for each province to quantify
+suitability for equation-discovery methods such as SINDy and FunSearch. The
+score integrates five components: case volume (30\\%), series density (25\\%),
+signal-to-noise ratio (20\\%), AR(1) goodness-of-fit (15\\%), and a spikiness
+penalty (10\\%). As shown in Figure~\\ref{fig:shape_scores}, all 32 provinces
+exceeded the Tier-2 threshold ($\\geq 35$): 22 provinces (69\\%) were classified
+\\textit{Tier 1 -- Excellent} ($\\geq 55$) and the remaining 10 as
+\\textit{Tier 2 -- Good} (35--54). No province fell below the Tier-2 threshold,
+indicating that the national surveillance network provides uniformly usable
+signals for modelling across the entire country.
+
+\\begin{figure}[h]
+\\centering
+\\includegraphics[width=\\textwidth]{data_processing/demographics/province_analysis/plot_shape_scores.png}
+\\caption{Shape/quality score ranking for all 32 provinces. Colour indicates
+tier: green (T1-Excellent, $\\geq 55$) and blue (T2-Good, 35--54). Dashed
+vertical lines mark tier boundaries. Santiago (94.0), Santo Domingo (92.8),
+and Distrito Nacional (92.1) lead the ranking; Pedernales (36.6) is the
+lowest-scoring province.}
+\\label{fig:shape_scores}
+\\end{figure}
+
+The top-scoring provinces are exclusively high-population urban centres, with
+shape scores dropping rapidly below 60 as province size and case volume
+decrease. Provinces with zero-rates above 50\\% (Hato Mayor, Pedernales,
+Santiago Rodr\\'iguez, El Seibo, El\\'ias Pi\\~na, Independencia) all fell
+into Tier 2, reflecting reduced signal density in sparsely populated regions.
+
+\\subsection{Autoregressive Structure}
+
+AR(1) models were fitted to each province's weekly time series. The resulting
+$R^2$ values and the full autocorrelation function (ACF) heatmap are presented
+in Figure~\\ref{fig:acf_heatmap}. AR(1) explained between 10.7\\% of variance
+(Pedernales) and 83.8\\% (Santiago). All 31 remaining provinces were rated
+\\textit{AR-useful} ($R^2 > 0.15$, $p < 0.05$); Pedernales alone was classified
+\\textit{WEAK}.
+
+\\begin{figure}[h]
+\\centering
+\\includegraphics[width=\\textwidth]{data_processing/demographics/province_analysis/plot_acf_heatmap.png}
+\\caption{Autocorrelation function (ACF) heatmap for all 32 provinces at lags
+1--26 weeks. Warm colours (green) indicate positive autocorrelation; cool
+colours (red) indicate negative. High-score provinces display persistent
+positive ACF bands extending 12--20 lags, demonstrating strong short-memory
+structure suitable for autoregressive feature engineering.}
+\\label{fig:acf_heatmap}
+\\end{figure}
+
+AR(1) coefficients ranged from $\\hat{\\alpha} = 0.327$ (Pedernales) to
+$\\hat{\\alpha} = 0.916$ (Santiago), with a median of 0.781 across all provinces.
+Autoregressive memory --- defined as the first lag at which the ACF drops
+below 0.20 --- ranged from 2 weeks (Pedernales) to 23 weeks (Monte Cristi),
+with the majority of provinces retaining meaningful autocorrelation for
+12--20 weeks. This persistent memory structure confirms that lagged case
+counts are strong candidate state variables for dynamical model inference.
+
+\\subsection{Seasonality}
+
+Strong seasonality (peak-month mean $> 1.5\\times$ annual weekly mean) was
+confirmed in all 32 provinces. Seasonal ratios ranged from 1.59 (Monte
+Cristi) to 3.63 (La Romana), indicating that incidence during the peak month
+was between 1.6 and 3.6 times the annual average. Spectral analysis via
+periodogram identified dominant cycles of approximately 52 weeks (annual)
+in most provinces; longer apparent periods (117--468 weeks) were detected
+in low-volume provinces where sparse observations inflate low-frequency
+spectral power.
+
+October was the most common peak month (19 of 32 provinces), followed by
+August (7 provinces) and November (5 provinces). This autumn-peak pattern is
+consistent with vector-borne transmission dynamics modulated by post-rainy-season
+mosquito population dynamics in the Caribbean. Figure~\\ref{fig:top5} illustrates
+the recurring seasonal structure in the five highest-scoring provinces, where
+annual peaks are clearly visible in each year of the observation window.
+
+\\begin{figure}[h]
+\\centering
+\\includegraphics[width=\\textwidth]{data_processing/demographics/province_analysis/plot_top5_timeseries.png}
+\\caption{Weekly case time series for the five highest-scoring provinces ---
+Santiago, Santo Domingo, Distrito Nacional, San Crist\\'obal, and La Vega
+(2015--2023). Shaded areas show case volume; vertical dotted lines mark
+calendar year boundaries. Recurring autumn peaks are visible across all
+five series, with notable inter-annual amplitude variation.}
+\\label{fig:top5}
+\\end{figure}
+
+\\subsection{Feature Utility for Predictive Modelling}
+
+The relative explanatory power of candidate predictive features is summarised
+in Figure~\\ref{fig:feature_utility}. The lag-1 feature (previous week's case
+count) was overwhelmingly the strongest predictor, with $R^2$ values ranging
+from 0.11 (Pedernales) to 0.84 (Santiago). This autoregressive signal was
+deemed \\textit{useful} ($R^2 > 0.15$) in 31 of 32 provinces. The monthly
+indicator contributed additional variance explained in 29 of 32 provinces
+(month $R^2 > 0.05$), capturing the seasonal signal not already encoded in
+the lag structure; month $R^2$ values ranged from 0.035 (Monte Cristi) to
+0.185 (Dajab\\'on). Long-term year trends were significant ($R^2 > 0.10$)
+in only 4 provinces (La Vega, La Romana, Hermanas Mirabal, Dajab\\'on),
+indicating that the surveillance record does not exhibit strong secular drift
+in most regions.
+
+\\begin{figure}[h]
+\\centering
+\\includegraphics[width=\\textwidth]{data_processing/demographics/province_analysis/plot_feature_utility.png}
+\\caption{Feature utility scatter plot. Each point represents one province;
+the $x$-axis shows lag-1 $R^2$ (autoregressive signal strength) and the
+$y$-axis shows month $R^2$ (seasonal signal strength). Bubble size scales with
+lag-1 $R^2$; colour encodes the composite shape score (green = high, red = low).
+Provinces in the upper-right quadrant benefit from both strong autoregressive
+and strong seasonal features.}
+\\label{fig:feature_utility}
+\\end{figure}
+
+Higher-order lag features showed rapid decay: median lag-4 $R^2$ was 0.31
+compared to 0.66 for lag-1, suggesting that one or two lags capture the
+majority of the exploitable autoregressive signal and that parsimonious
+models are likely sufficient for most provinces.
+
+\\subsection{Inter-Provincial Similarity}
+
+Cosine similarity was computed between standardised time series for all
+$\\binom{32}{2} = 496$ province pairs. The resulting similarity matrix is
+shown in Figure~\\ref{fig:similarity}. The highest pairwise similarity was
+observed between Distrito Nacional and Santo Domingo ($r_{\\mathrm{cos}} = 0.946$),
+followed by San Crist\\'obal -- Santo Domingo ($0.943$) and Distrito Nacional --
+San Crist\\'obal ($0.898$), reflecting the tightly coupled epidemic dynamics of
+the Santo Domingo metropolitan conurbation. A further 17 pairs achieved
+$r_{\\mathrm{cos}} > 0.80$, indicating broad synchrony of epidemic timing
+across the national territory.
+
+\\begin{figure}[h]
+\\centering
+\\includegraphics[width=\\textwidth]{data_processing/demographics/province_analysis/plot_similarity_matrix.png}
+\\caption{Cosine similarity matrix across all 32 province pairs. Darker blue
+indicates higher cosine similarity. The Santo Domingo metropolitan cluster
+(Distrito Nacional, Santo Domingo, San Crist\\'obal) forms a visually distinct
+high-similarity block. Pedernales (lower-right) is an outlier with near-zero
+similarity to most provinces.}
+\\label{fig:similarity}
+\\end{figure}
+
+Pedernales exhibited the lowest mean inter-provincial similarity, with pairwise
+cosine similarities below 0.15 against the majority of provinces and a
+near-zero value of $-0.009$ against Monse\\~nor Nouel. This outlier status ---
+compounded by its 70.7\\% zero-week rate and AR(1) $R^2$ of only 0.107 ---
+suggests that Pedernales dynamics are driven by mechanisms distinct from the
+rest of the network, possibly including geographic isolation, sparse population,
+or reporting irregularities. Any modelling pipeline that pools provincial data
+should treat Pedernales as a special case.
+
+\\end{document}`;
+
+// ═══════════════════════════════════════════════════════════════
+// GREEK, SYMBOLS, BIG OPS
+// ═══════════════════════════════════════════════════════════════
+const GREEK={alpha:'α',beta:'β',gamma:'γ',delta:'δ',epsilon:'ε',varepsilon:'ε',zeta:'ζ',eta:'η',theta:'θ',vartheta:'ϑ',iota:'ι',kappa:'κ',lambda:'λ',mu:'μ',nu:'ν',xi:'ξ',pi:'π',varpi:'ϖ',rho:'ρ',varrho:'ϱ',sigma:'σ',varsigma:'ς',tau:'τ',upsilon:'υ',phi:'φ',varphi:'φ',chi:'χ',psi:'ψ',omega:'ω',Gamma:'Γ',Delta:'Δ',Theta:'Θ',Lambda:'Λ',Xi:'Ξ',Pi:'Π',Sigma:'Σ',Upsilon:'Υ',Phi:'Φ',Psi:'Ψ',Omega:'Ω'};
+const SYM={cdot:'·',times:'×',div:'÷',pm:'±',mp:'∓',oplus:'⊕',otimes:'⊗',circ:'∘',bullet:'•',ast:'∗',star:'⋆',dagger:'†',leq:'≤',geq:'≥',neq:'≠',approx:'≈',equiv:'≡',sim:'∼',simeq:'≃',cong:'≅',propto:'∝',prec:'≺',succ:'≻',ll:'≪',gg:'≫',in:'∈',notin:'∉',ni:'∋',subset:'⊂',supset:'⊃',subseteq:'⊆',supseteq:'⊇',cup:'∪',cap:'∩',setminus:'∖',wedge:'∧',vee:'∨',neg:'¬',to:'→',rightarrow:'→',leftarrow:'←',Rightarrow:'⇒',Leftarrow:'⇐',leftrightarrow:'↔',Leftrightarrow:'⟺',mapsto:'↦',uparrow:'↑',downarrow:'↓',infty:'∞',partial:'∂',nabla:'∇',forall:'∀',exists:'∃',nexists:'∄',emptyset:'∅',varnothing:'∅',angle:'∠',perp:'⊥',parallel:'∥',ldots:'…',cdots:'⋯',vdots:'⋮',ddots:'⋱',aleph:'ℵ',hbar:'ℏ',ell:'ℓ',Re:'ℜ',Im:'ℑ',langle:'⟨',rangle:'⟩',lfloor:'⌊',rfloor:'⌋',lceil:'⌈',rceil:'⌉',mid:'|',vert:'|',Vert:'‖'};
+const BIGOPS={sum:'∑',prod:'∏',int:'∫',oint:'∮',iint:'∬',iiint:'∭',bigcup:'⋃',bigcap:'⋂',bigoplus:'⨁',bigotimes:'⨂',coprod:'∐',bigwedge:'⋀',bigvee:'⋁'};
+const FNAMES=['sin','cos','tan','cot','sec','csc','arcsin','arccos','arctan','sinh','cosh','tanh','exp','log','ln','det','dim','ker','rank','deg','gcd','lcm','Pr','max','min','sup','inf','lim','limsup','liminf','arg'];
+
+// ═══════════════════════════════════════════════════════════════
+// MATH RENDERER
+// ═══════════════════════════════════════════════════════════════
+function renderMath(s,disp){for(let i=0;i<5;i++)s=mathPass(s,disp);return s;}
+
+function mathPass(s,disp){
+  s=s.replace(/\\begin\{pmatrix\}([\s\S]*?)\\end\{pmatrix\}/g,(_,b)=>renderMx(b,'(',')'));
+  s=s.replace(/\\begin\{bmatrix\}([\s\S]*?)\\end\{bmatrix\}/g,(_,b)=>renderMx(b,'[',']'));
+  s=s.replace(/\\begin\{vmatrix\}([\s\S]*?)\\end\{vmatrix\}/g,(_,b)=>renderMx(b,'|','|'));
+  s=s.replace(/\\begin\{Vmatrix\}([\s\S]*?)\\end\{Vmatrix\}/g,(_,b)=>renderMx(b,'‖','‖'));
+  s=s.replace(/\\begin\{matrix\}([\s\S]*?)\\end\{matrix\}/g,(_,b)=>renderMx(b,'',''));
+  s=s.replace(/\\begin\{cases\}([\s\S]*?)\\end\{cases\}/g,(_,b)=>renderCases(b));
+  s=s.replace(/\\[dt]?frac\{([^{}]*)\}\{([^{}]*)\}/g,(_,n,d)=>`<span class="frac"><span class="fn">${n}</span><span class="fd">${d}</span></span>`);
+  s=s.replace(/\\sqrt\[([^\]]*)\]\{([^{}]*)\}/g,(_,n,c)=>`<sup style="font-size:.72em">${n}</sup>√<span class="sq-c">${c}</span>`);
+  s=s.replace(/\\sqrt\{([^{}]*)\}/g,(_,c)=>`√<span class="sq-c">${c}</span>`);
+  s=s.replace(/\\sqrt\s+([a-zA-Z0-9])/g,(_,c)=>`√${c}`);
+  s=s.replace(/\\hat\{([^{}]*)\}/g,'$1̂');s=s.replace(/\\tilde\{([^{}]*)\}/g,'$1̃');
+  s=s.replace(/\\bar\{([^{}]*)\}/g,'$1̄');s=s.replace(/\\vec\{([^{}]*)\}/g,'$1⃗');
+  s=s.replace(/\\dot\{([^{}]*)\}/g,'$1̇');s=s.replace(/\\ddot\{([^{}]*)\}/g,'$1̈');
+  s=s.replace(/\\overline\{([^{}]*)\}/g,'<span style="text-decoration:overline">$1</span>');
+  s=s.replace(/\\underline\{([^{}]*)\}/g,'<span style="text-decoration:underline">$1</span>');
+  s=s.replace(/\\overbrace\{([^{}]*)\}/g,'<span style="border-top:2px solid;padding-top:2px">$1</span>');
+  s=s.replace(/\\underbrace\{([^{}]*)\}/g,'<span style="border-bottom:2px solid;padding-bottom:2px">$1</span>');
+  s=s.replace(/\\mathbf\{([^{}]*)\}/g,'<b>$1</b>');
+  s=s.replace(/\\boldsymbol\{([^{}]*)\}/g,'<b><i>$1</i></b>');
+  s=s.replace(/\\mathit\{([^{}]*)\}/g,'<i>$1</i>');
+  s=s.replace(/\\mathrm\{([^{}]*)\}/g,'<span style="font-style:normal">$1</span>');
+  s=s.replace(/\\mathsf\{([^{}]*)\}/g,'<span style="font-family:sans-serif;font-style:normal">$1</span>');
+  s=s.replace(/\\mathtt\{([^{}]*)\}/g,'<span style="font-family:monospace;font-style:normal">$1</span>');
+  s=s.replace(/\\mathcal\{([^{}]*)\}/g,(_,c)=>{const M={A:'𝒜',B:'ℬ',C:'𝒞',D:'𝒟',E:'ℰ',F:'ℱ',G:'𝒢',H:'ℋ',I:'ℐ',J:'𝒥',K:'𝒦',L:'ℒ',M:'ℳ',N:'𝒩',O:'𝒪',P:'𝒫',Q:'𝒬',R:'ℛ',S:'𝒮',T:'𝒯',U:'𝒰',V:'𝒱',W:'𝒲',X:'𝒳',Y:'𝒴',Z:'𝒵'};return c.split('').map(ch=>M[ch]||ch).join('');});
+  s=s.replace(/\\mathbb\{([^{}]*)\}/g,(_,c)=>{const M={R:'ℝ',N:'ℕ',Z:'ℤ',Q:'ℚ',C:'ℂ',P:'ℙ',F:'𝔽',k:'𝕜',E:'𝔼'};return c.split('').map(ch=>M[ch]||ch).join('');});
+  s=s.replace(/\\text\{([^{}]*)\}/g,'<span style="font-style:normal">$1</span>');
+  s=s.replace(/\\textrm\{([^{}]*)\}/g,'<span style="font-style:normal">$1</span>');
+  s=s.replace(/\\textit\{([^{}]*)\}/g,'<i>$1</i>');
+  s=s.replace(/\\textbf\{([^{}]*)\}/g,'<b>$1</b>');
+  const BIG_RE=new RegExp('\\\\('+Object.keys(BIGOPS).join('|')+')\\b','g');
+  s=s.replace(BIG_RE,(_,op)=>`\x00B\x01${BIGOPS[op]}\x01`);
+  s=s.replace(/\x00B\x01([^\x01]+)\x01\s*_\{([^{}]*)\}\s*\^\{([^{}]*)\}/g,(_,op,sb,sp)=>bigH(op,sp,sb,disp));
+  s=s.replace(/\x00B\x01([^\x01]+)\x01\s*\^\{([^{}]*)\}\s*_\{([^{}]*)\}/g,(_,op,sp,sb)=>bigH(op,sp,sb,disp));
+  s=s.replace(/\x00B\x01([^\x01]+)\x01\s*_\{([^{}]*)\}/g,(_,op,sb)=>bigH(op,'',sb,disp));
+  s=s.replace(/\x00B\x01([^\x01]+)\x01\s*\^\{([^{}]*)\}/g,(_,op,sp)=>bigH(op,sp,'',disp));
+  s=s.replace(/\x00B\x01([^\x01]+)\x01/g,(_,op)=>`<span class="big-op">${op}</span>`);
+  FNAMES.forEach(fn=>s=s.replace(new RegExp('\\\\'+fn+'\\b','g'),`<span style="font-style:normal">${fn}</span>`));
+  const LR=[['\\(','('],['\\)',')'],['\\.',''],['\\[','['],['\\]',']'],['\\{','{'],['\\}','}'],['|','|'],['\\|','‖'],['\\langle','⟨'],['\\rangle','⟩'],['\\lfloor','⌊'],['\\rfloor','⌋'],['\\lceil','⌈'],['\\rceil','⌉']];
+  LR.forEach(([p,ch])=>{const e=p.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');s=s.replace(new RegExp('\\\\(?:left|right)\\s*'+e,'g'),ch?`<span class="big-del">${ch}</span>`:'');});
+  s=s.replace(/\\(?:left|right)\s*\./g,'');
+  s=s.replace(/\^\{([^{}]*)\}/g,'<sup>$1</sup>');s=s.replace(/\^([a-zA-Z0-9*+\-])/g,'<sup>$1</sup>');
+  s=s.replace(/_\{([^{}]*)\}/g,'<sub>$1</sub>');s=s.replace(/_([a-zA-Z0-9*+\-])/g,'<sub>$1</sub>');
+  Object.entries(GREEK).forEach(([k,v])=>s=s.replace(new RegExp('\\\\'+k+'\\b','g'),v));
+  Object.entries(SYM).forEach(([k,v])=>s=s.replace(new RegExp('\\\\'+k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b','g'),v));
+  s=s.replace(/\\displaystyle\s*/g,'').replace(/\\textstyle\s*/g,'').replace(/\\scriptstyle\s*/g,'');
+  s=s.replace(/\\\{/g,'{').replace(/\\\}/g,'}');
+  s=s.replace(/\{([^{}]*)\}/g,'$1');
+  s=s.replace(/\\\\/g,disp?'<br>':' ');
+  s=s.replace(/\\[,;:!]/g,' ').replace(/\\quad\b/g,' ').replace(/\\qquad\b/g,'  ');
+  s=s.replace(/\\label\{[^}]*\}/g,'').replace(/\\nonumber\b/g,'').replace(/\\tag\{[^}]*\}/g,'');
+  return s;
+}
+function bigH(op,sp,sb,d){
+  if(d&&(sp||sb)){
+    const sh=sp?`<div class="op-lim">${renderMath(sp,false)}</div>`:'<div class="op-lim">&nbsp;</div>';
+    const bh=sb?`<div class="op-lim">${renderMath(sb,false)}</div>`:'<div class="op-lim">&nbsp;</div>';
+    return `<span class="op-wr">${sh}<span class="big-op">${op}</span>${bh}</span>`;
+  }
+  return `<span class="big-op">${op}</span>${sp?`<sup>${renderMath(sp,false)}</sup>`:''}${sb?`<sub>${renderMath(sb,false)}</sub>`:''}`;
+}
+function renderMx(body,l,r){
+  const rows=body.trim().split('\\\\').filter(x=>x.trim());
+  const trs=rows.map(r=>('<tr>'+r.split('&').map(c=>`<td>${renderMath(c.trim(),false)}</td>`).join('')+'</tr>')).join('');
+  return `${l?`<span class="big-del">${l}</span>`:''}<table class="mx"><tbody>${trs}</tbody></table>${r?`<span class="big-del">${r}</span>`:''}`;
+}
+function renderCases(body){
+  const rows=body.trim().split('\\\\').filter(x=>x.trim());
+  return '{<span class="cases-wrap">'+rows.map(row=>{const p=row.split('&');return `<div class="cases-row">${renderMath((p[0]||'').trim(),false)}${p[1]?`<span style="font-style:normal;margin-left:14px">${renderMath(p[1].trim(),false)}</span>`:''}</div>`;}).join('')+'</span>';
+}
+
+// ═══════════════════════════════════════════════════════════════
+// INLINE TEXT
+// ═══════════════════════════════════════════════════════════════
+function inlineText(s){
+  s=s.replace(/\$\$([^$]+)\$\$/g,(_,m)=>`<span class="md">${renderMath(m.trim(),true)}</span>`);
+  s=s.replace(/\$([^$\n]+)\$/g,(_,m)=>`<span class="mi">${renderMath(m.trim(),false)}</span>`);
+  s=s.replace(/\\\(([^]*?)\\\)/g,(_,m)=>`<span class="mi">${renderMath(m.trim(),false)}</span>`);
+  s=s.replace(/\\\[([^]*?)\\\]/g,(_,m)=>`<div class="md">${renderMath(m.trim(),true)}</div>`);
+  s=s.replace(/\\textbf\{([^{}]*)\}/g,'<strong>$1</strong>');
+  s=s.replace(/\\textit\{([^{}]*)\}/g,'<em>$1</em>');
+  s=s.replace(/\\emph\{([^{}]*)\}/g,'<em>$1</em>');
+  s=s.replace(/\\underline\{([^{}]*)\}/g,'<span style="text-decoration:underline">$1</span>');
+  s=s.replace(/\\texttt\{([^{}]*)\}/g,'<code style="font-size:.9em">$1</code>');
+  s=s.replace(/\\textsc\{([^{}]*)\}/g,'<span style="font-variant:small-caps">$1</span>');
+  s=s.replace(/\\%/g,'%').replace(/\\&/g,'&amp;').replace(/\\#/g,'#').replace(/\\\$/g,'$');
+  s=s.replace(/---/g,'—').replace(/--/g,'–');
+  s=s.replace(/``/g,'"').replace(/''/g,'"');
+  s=s.replace(/\\label\{[^}]*\}/g,'').replace(/\\(?:eq)?ref\{([^}]*)\}/g,'(?)');
+  s=s.replace(/\\cite[pt]?\{([^}]*)\}/g,'[$1]');
+  s=s.replace(/\\footnote\{([^{}]*)\}/g,'<sup title="$1" style="color:#888;cursor:help">†</sup>');
+  s=s.replace(/\\url\{([^}]*)\}/g,'<code style="font-size:.88em">$1</code>');
+  s=s.replace(/\\href\{[^}]*\}\{([^}]*)\}/g,'$1');
+  s=s.replace(/\\noindent\s*/g,'');
+  s=s.replace(/\\(?:med|big|small)skip/g,'');
+  s=s.replace(/\\[vh]space\{[^}]*\}/g,' ');
+  s=s.replace(/\\today/g,new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}));
+  s=s.replace(/\\\\/g,'<br>').replace(/~~/g,'&nbsp;&nbsp;').replace(/~/g,'&nbsp;');
+  return s;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ENVIRONMENT + BODY PROCESSORS
+// ═══════════════════════════════════════════════════════════════
+let SC=[0,0,0],thmN=0;
+function processEnv(name,content){
+  name=name.trim();content=content.trim();
+  if(name==='abstract') return `<div class="abstract-env"><div class="abstract-title">Abstract</div>${wrapP(content)}</div>`;
+  if(name==='itemize') return renderList(content,'ul');
+  if(name==='enumerate') return renderList(content,'ol');
+  if(name==='description') return renderDesc(content);
+  if(name==='equation'||name==='equation*') return `<div class="md">${renderMath(content.replace(/\\\\/g,' ').trim(),true)}</div>`;
+  if(name==='align'||name==='align*'||name==='aligned') return renderAlign(content);
+  if(name==='gather'||name==='gather*') return content.split('\\\\').map(l=>`<div class="md">${renderMath(l.trim(),true)}</div>`).join('');
+  if(name==='multline'||name==='multline*') return `<div class="md">${renderMath(content.trim(),true)}</div>`;
+  if(['theorem','lemma','proposition','corollary','definition','remark','example','conjecture','claim','notation','assumption'].includes(name)){
+    thmN++;const lbl=name[0].toUpperCase()+name.slice(1);
+    return `<div class="thm-env"><span class="thm-lbl">${lbl} ${SC[0]}.${thmN}.</span> <em>${wrapP(content)}</em></div>`;
+  }
+  if(name==='proof') return `<div class="pf-env"><span class="pf-lbl">Proof.</span> ${wrapP(content)} <span class="qed">&#x25A1;</span><div style="clear:both"></div></div>`;
+  if(name==='figure'||name==='figure*'){
+    const cap=content.match(/\\caption\{([^{}]*)\}/);
+    const imgM=content.match(/\\includegraphics(?:\[[^\]]*\])?\{([^{}]+)\}/);
+    const imgHtml=imgM
+      ?`<img src="${imgM[1].trim()}" alt="figure" onerror="this.style.display='none';this.nextSibling.style.display='block'">`
+        +`<div style="display:none;color:#999;font-size:9pt;font-style:italic;padding:10px 0">[Image not found: ${imgM[1].trim()}]</div>`
+      :'<div style="color:#aaa;font-style:italic;font-size:9.5pt;padding:12px">[No image path specified]</div>';
+    return `<div class="fig-wrap">${imgHtml}${cap?`<p class="fig-caption"><b>Figure.</b> ${inlineText(cap[1])}</p>`:''}</div>`;
+  }
+  if(name==='table'||name==='table*') return `<div style="margin:9px 0">${processBody(content)}</div>`;
+  if(name==='tabular') return renderTabular(content);
+  if(name==='center') return `<div style="text-align:center">${processBody(content)}</div>`;
+  if(name==='flushright') return `<div style="text-align:right">${processBody(content)}</div>`;
+  if(name==='quote'||name==='quotation') return `<blockquote>${wrapP(content)}</blockquote>`;
+  if(name==='verbatim'||name==='lstlisting'||name==='minted') return `<pre class="vb">${esc(content)}</pre>`;
+  return processBody(content);
+}
+function renderList(c,t){
+  return `<${t} class="ll">${c.split(/\\item/).filter(s=>s.trim()).map(item=>{const lm=item.match(/^\[([^\]]*)\]/);const rest=lm?item.slice(lm[0].length):item;return `<li>${lm?`<b>[${inlineText(lm[1])}]</b> `:''}${processBody(rest.trim())}</li>`;}).join('')}</${t}>`;
+}
+function renderDesc(c){
+  return '<dl>'+c.split(/\\item/).filter(s=>s.trim()).map(item=>{const lm=item.match(/^\[([^\]]*)\]/);if(lm)return `<dt style="font-weight:bold;margin-top:5px">${inlineText(lm[1])}</dt><dd style="margin-left:16px">${processBody(item.slice(lm[0].length).trim())}</dd>`;return `<dd>${processBody(item.trim())}</dd>`;}).join('')+'</dl>';
+}
+function renderAlign(c){
+  return c.split('\\\\').map(line=>{
+    line=line.trim().replace(/\\nonumber/g,'').replace(/\\tag\{[^}]*\}/g,'').replace(/\\label\{[^}]*\}/g,'');
+    if(!line) return '';
+    const parts=line.split('&');
+    if(parts.length===1) return `<div class="md">${renderMath(parts[0].trim(),true)}</div>`;
+    let h='<div class="align-tbl">';
+    for(let i=0;i<parts.length;i+=2){h+=`<div class="align-row"><span class="align-l">${parts[i]?renderMath(parts[i].trim(),true):''}</span><span class="align-r">${parts[i+1]?renderMath(parts[i+1].trim(),true):''}</span></div>`;}
+    return h+'</div>';
+  }).join('');
+}
+function renderTabular(c){
+  // Strip column spec {lrccc...} at the start
+  const specM=c.match(/^\s*\{([^}]*)\}/);
+  let colAligns=[];
+  if(specM){c=c.slice(specM.index+specM[0].length);colAligns=[...specM[1].replace(/[|@{][^}]*/g,'')].filter(ch=>'lrcpX'.includes(ch));}
+  // Split into lines on \\
+  const lines=c.split('\\\\');
+  let rows='',pendingClass='';
+  lines.forEach(line=>{
+    line=line.trim();
+    if(!line)return;
+    // Detect booktabs / hline rules
+    if(/\\toprule/.test(line)){pendingClass='rule-top';line=line.replace(/\\toprule\b/g,'').trim();}
+    else if(/\\midrule/.test(line)){pendingClass='rule-mid';line=line.replace(/\\midrule\b/g,'').trim();}
+    else if(/\\bottomrule/.test(line)){pendingClass='rule-bot';line=line.replace(/\\bottomrule\b/g,'').trim();}
+    else if(/\\hline/.test(line)){pendingClass='rule-mid';line=line.replace(/\\hline/g,'').trim();}
+    if(!line){// rule-only line — attach class to next data row by leaving pendingClass set
+      return;}
+    const cells=line.split('&');
+    const tds=cells.map((cell,i)=>{
+      const align=colAligns[i]==='r'?'right':colAligns[i]==='c'?'center':'left';
+      return `<td style="text-align:${align}">${processBody(cell.trim())}</td>`;
+    }).join('');
+    rows+=`<tr class="${pendingClass}">${tds}</tr>`;
+    pendingClass='';
+  });
+  return `<div class="tabular-wrap"><table class="tabular">${rows}</table></div>`;
+}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function wrapP(s){const b=s.split(/\n\n+/).map(p=>p.trim()).filter(Boolean);if(b.length<=1)return `<p>${inlineText(s.trim())}</p>`;return b.map(p=>`<p>${inlineText(p.replace(/\n/g,' '))}</p>`).join('');}
+function processBody(s){
+  let result='',rem=s;
+  const ENV=/\\begin\{([^}]+)\}([\s\S]*?)\\end\{\1\}/;
+  while(rem.length>0){const m=ENV.exec(rem);if(!m){result+=processText(rem);break;}result+=processText(rem.slice(0,m.index));result+=processEnv(m[1],m[2]);rem=rem.slice(m.index+m[0].length);}
+  return result;
+}
+function processText(s){
+  s=s.replace(/\\section\*?\{([^{}]*)\}/g,(_,t)=>{SC[0]++;SC[1]=0;SC[2]=0;thmN=0;return `<h2 class="sec-1"><span class="sec-num">${SC[0]}.</span>${inlineText(t)}</h2>`;});
+  s=s.replace(/\\subsection\*?\{([^{}]*)\}/g,(_,t)=>{SC[1]++;SC[2]=0;return `<h3 class="sec-2"><span class="sec-num">${SC[0]}.${SC[1]}</span> ${inlineText(t)}</h3>`;});
+  s=s.replace(/\\subsubsection\*?\{([^{}]*)\}/g,(_,t)=>`<h4 class="sec-3">${inlineText(t)}</h4>`);
+  s=s.replace(/\\paragraph\*?\{([^{}]*)\}/g,(_,t)=>`<p><strong>${inlineText(t)}</strong>&nbsp;`);
+  s=s.replace(/\\maketitle/g,'<!-- __TITLE__ -->');
+  s=s.replace(/\\tableofcontents/g,'');
+  s=s.replace(/\\newpage|\\clearpage/g,'<hr class="hrule">');
+  s=s.replace(/\\hrule/g,'<hr class="hrule">');
+  s=s.replace(/\$\$([^$]+)\$\$/g,(_,m)=>`<div class="md">${renderMath(m.trim(),true)}</div>`);
+  s=s.replace(/\\\[([\s\S]*?)\\\]/g,(_,m)=>`<div class="md">${renderMath(m.trim(),true)}</div>`);
+  s=s.replace(/\$([^$\n]+)\$/g,(_,m)=>`<span class="mi">${renderMath(m.trim(),false)}</span>`);
+  s=s.replace(/\\\(([^]*?)\\\)/g,(_,m)=>`<span class="mi">${renderMath(m.trim(),false)}</span>`);
+  return s.split(/\n\n+/).map(blk=>{blk=blk.trim();if(!blk)return '';if(/^<[h2-4]|^<div|^<hr|^<!--/.test(blk))return blk;return `<p>${inlineText(blk.replace(/\n/g,' '))}</p>`;}).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// DOCUMENT RENDERER
+// ═══════════════════════════════════════════════════════════════
+function renderDocument(src){
+  SC=[0,0,0];thmN=0;
+  src=src.replace(/%[^\n]*/g,'');
+  const tM=src.match(/\\title\{([^{}]*)\}/),aM=src.match(/\\author\{([^{}]*)\}/),dM=src.match(/\\date\{([^{}]*)\}/);
+  const title=tM?inlineText(tM[1]):'',auth=aM?inlineText(aM[1]):'',date=dM?inlineText(dM[1]):'';
+  const docM=src.match(/\\begin\{document\}([\s\S]*)\\end\{document\}/);
+  let body=docM?docM[1]:src;
+  ['\\\\usepackage','\\\\documentclass','\\\\title','\\\\author','\\\\date','\\\\newcommand','\\\\renewcommand','\\\\setlength','\\\\geometry','\\\\pagestyle','\\\\bibliographystyle'].forEach(cmd=>{body=body.replace(new RegExp(cmd+'[^{]*\\{[^}]*\\}(?:\\{[^}]*\\})?','g'),'');});
+  let titleBlock='';
+  if(title||auth||date){titleBlock=(title?`<div class="doc-title">${title}</div>`:''+(auth?`<div class="doc-author">${auth}</div>`:''+(date?`<div class="doc-date">${date}</div>`:'')))+'<hr class="title-rule">';}
+  let html=processBody(body);
+  html=html.replace('<!-- __TITLE__ -->',titleBlock);
+  if(titleBlock&&!html.includes(titleBlock))html=titleBlock+html;
+  return html;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// EDITOR LOGIC
+// ═══════════════════════════════════════════════════════════════
+const editor=document.getElementById('editor');
+const page=document.getElementById('preview-page');
+const statusDot=document.getElementById('status-dot');
+const statusText=document.getElementById('status-text');
+const renderTimeEl=document.getElementById('render-time');
+const lineColEl=document.getElementById('line-col');
+let renderTimer=null;
+let isDirty=false;
+
+function setStatus(msg,type='ok'){
+  statusText.textContent=msg;
+  statusDot.className='status-dot'+(type==='dirty'?' dirty':type==='error'?' error':'');
+}
+function setDirty(){isDirty=true;setStatus('Unsaved changes','dirty');}
+
+function scheduleRender(){
+  clearTimeout(renderTimer);
+  renderTimer=setTimeout(doRender,300);
+}
+
+function doRender(){
+  const src=editor.value;
+  const t0=performance.now();
+  try{
+    page.innerHTML=renderDocument(src);
+    const ms=Math.round(performance.now()-t0);
+    renderTimeEl.textContent=`${ms}ms`;
+    if(isDirty) setStatus('Unsaved changes','dirty');
+    else setStatus('Rendered ✓','ok');
+  }catch(e){
+    page.innerHTML=`<div class="render-error">Render error: ${esc(e.message)}</div>`;
+    setStatus('Error','error');
+  }
+  localStorage.setItem('latex-editor-src',src);
+}
+
+// Keyboard shortcuts
+editor.addEventListener('keydown',e=>{
+  if(e.key==='Tab'){e.preventDefault();const s=editor.selectionStart,en=editor.selectionEnd;editor.value=editor.value.slice(0,s)+'  '+editor.value.slice(en);editor.selectionStart=editor.selectionEnd=s+2;scheduleRender();}
+  if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();saveFile();}
+});
+editor.addEventListener('input',()=>{setDirty();scheduleRender();});
+editor.addEventListener('keyup',updateLineCol);
+editor.addEventListener('click',updateLineCol);
+
+function updateLineCol(){
+  const txt=editor.value.slice(0,editor.selectionStart);
+  const lines=txt.split('\n');
+  lineColEl.textContent=`Ln ${lines.length}, Col ${lines[lines.length-1].length+1}`;
+}
+
+// ── File ops ──
+function newDoc(){
+  if(isDirty&&!confirm('Discard unsaved changes?')) return;
+  editor.value=DEFAULT_DOC;
+  document.getElementById('filename-display').value='document.tex';
+  isDirty=false;setStatus('New document');doRender();
+}
+function loadFile(){document.getElementById('file-input').click();}
+function onFileLoaded(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{editor.value=ev.target.result;document.getElementById('filename-display').value=file.name;isDirty=false;setStatus('Loaded: '+file.name);doRender();};
+  reader.readAsText(file);e.target.value='';
+}
+function saveFile(){
+  const fname=document.getElementById('filename-display').value||'document.tex';
+  const blob=new Blob([editor.value],{type:'text/plain'});
+  const a=Object.assign(document.createElement('a'),{href:URL.createObjectURL(blob),download:fname});
+  a.click();URL.revokeObjectURL(a.href);
+  isDirty=false;setStatus('Saved: '+fname,'ok');
+}
+
+// ── Resizer ──
+const resizer=document.getElementById('resizer');
+const paneEditor=document.getElementById('pane-editor');
+const panePreview=document.getElementById('pane-preview');
+let resizing=false,startX=0,startW=0;
+resizer.addEventListener('mousedown',e=>{resizing=true;startX=e.clientX;startW=paneEditor.offsetWidth;resizer.classList.add('dragging');e.preventDefault();});
+document.addEventListener('mousemove',e=>{if(!resizing)return;const main=document.getElementById('main');const total=main.offsetWidth-4;const w=Math.max(200,Math.min(total-200,startW+(e.clientX-startX)));paneEditor.style.width=w+'px';panePreview.style.width=(total-w)+'px';});
+document.addEventListener('mouseup',()=>{resizing=false;resizer.classList.remove('dragging');});
+
+// ── Help modal ──
+function showHelp(){document.getElementById('help-modal').classList.add('open');}
+function closeHelp(){document.getElementById('help-modal').classList.remove('open');}
+document.getElementById('help-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeHelp();});
+
+// ── Init ──
+const saved=localStorage.getItem('latex-editor-src');
+editor.value=saved||DEFAULT_DOC;
+isDirty=false;
+doRender();
+updateLineCol();
+</script>
+</body>
+</html>

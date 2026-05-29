@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FunSearch-SINDy Roadmap — DR Dengue Project 2</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #f8f9fa;
+    font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    padding: 32px 24px;
+    color: #222;
+    max-width: 780px;
+    margin: 0 auto;
+  }
+
+  h1 { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+  .subtitle { font-size: 13px; color: #666; margin-bottom: 20px; }
+
+  .board { display: flex; flex-direction: column; gap: 12px; }
+
+  .phase-row { display: flex; align-items: stretch; gap: 8px; }
+
+  .tile {
+    flex: 1;
+    border-radius: 10px;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    position: relative;
+    border: 2px solid transparent;
+    user-select: none;
+  }
+  .tile:hover { transform: translateY(-2px); box-shadow: 0 4px 14px rgba(0,0,0,0.13); }
+
+  .tile.done     { background: #e8f5e9; border-color: #4caf50; }
+  .tile.active   { background: #fff3e0; border-color: #ff9800; animation: pulse 2s infinite; }
+  .tile.upcoming { background: #f5f5f5; border-color: #ddd; }
+  .tile.future   { background: #fafafa; border-color: #eee; opacity: 0.65; }
+
+  .tile.done   .tile-num { background: #4caf50; color: #fff; }
+  .tile.active .tile-num { background: #ff9800; color: #fff; }
+  .tile.upcoming .tile-num { background: #e0e0e0; color: #888; }
+  .tile.future   .tile-num { background: #eee;    color: #bbb; }
+
+  .tile.done   .tile-title { color: #2e7d32; }
+  .tile.active .tile-title { color: #e65100; }
+  .tile.upcoming .tile-title { color: #999; }
+  .tile.future   .tile-title { color: #bbb; }
+
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255,152,0,0.3); }
+    50%       { box-shadow: 0 0 0 7px rgba(255,152,0,0); }
+  }
+
+  .tile-header { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+  .tile-num {
+    width: 24px; height: 24px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; flex-shrink: 0;
+  }
+  .tile-title { font-size: 14px; font-weight: 600; }
+  .tile-sub   { font-size: 11px; color: #888; margin-bottom: 8px; margin-left: 32px; }
+
+  .progress-bar-wrap { height: 4px; background: #e0e0e0; border-radius: 2px; margin: 6px 0 4px; }
+  .progress-bar      { height: 4px; background: #4caf50; border-radius: 2px; transition: width 0.4s; }
+  .progress-bar.orange { background: #ff9800; }
+
+  .badge-done   { position: absolute; top: 10px; right: 12px; background: #4caf50; color: #fff; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 10px; }
+  .badge-active { position: absolute; top: 10px; right: 12px; background: #ff9800; color: #fff; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 10px; }
+
+  .arrow { text-align: center; color: #bbb; font-size: 18px; line-height: 1; margin: -4px 0; }
+
+  .detail-panel {
+    display: none;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-size: 13px;
+    line-height: 1.7;
+    margin-top: -4px;
+  }
+  .detail-panel.visible { display: block; }
+  .detail-panel h3 { font-size: 13px; font-weight: 700; margin-bottom: 8px; color: #444; }
+  .detail-panel ul { padding-left: 18px; }
+  .detail-panel li { margin-bottom: 4px; }
+
+  .overall-bar-wrap {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .overall-label { font-size: 12px; color: #888; white-space: nowrap; }
+  .overall-track { flex: 1; height: 8px; background: #eee; border-radius: 4px; }
+  .overall-fill  { height: 8px; background: linear-gradient(90deg, #4caf50, #ff9800); border-radius: 4px; transition: width 0.6s; }
+  .overall-pct   { font-size: 13px; font-weight: 700; color: #333; white-space: nowrap; }
+
+  .project-badge {
+    display: inline-block;
+    background: #e3f2fd;
+    border: 1px solid #90caf9;
+    color: #1565c0;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 12px;
+    margin-bottom: 6px;
+  }
+
+  footer { margin-top: 28px; font-size: 11px; color: #aaa; text-align: center; }
+  footer a { color: #90caf9; text-decoration: none; }
+</style>
+</head>
+<body>
+
+<div class="project-badge">Project 2 of 3 — FunSearch-SINDy (No LLM)</div>
+<h1>FunSearch-SINDy Roadmap</h1>
+<p class="subtitle">Evolutionary equation search seeded from SINDy · Dominican Republic Dengue · 2026</p>
+
+<div class="overall-bar-wrap">
+  <span class="overall-label">Overall progress</span>
+  <div class="overall-track"><div class="overall-fill" style="width:43%"></div></div>
+  <span class="overall-pct">43%</span>
+</div>
+
+<div class="board">
+
+  <!-- Stage 1 -->
+  <div class="phase-row">
+    <div class="tile done" onclick="toggle(1)">
+      <div class="tile-header"><div class="tile-num">1</div><div class="tile-title">Setup & Equation Representation</div></div>
+      <div class="tile-sub">config.py · equation.py · seed_loader.py · 66-term library</div>
+      <div class="progress-bar-wrap"><div class="progress-bar" style="width:100%"></div></div>
+      <div class="badge-done">DONE</div>
+    </div>
+  </div>
+  <div class="detail-panel" id="detail-1">
+    <h3>Stage 1 — Setup & Equation Representation</h3>
+    <ul>
+      <li>Create funsearch/ directory with: evaluator.py, mutator.py, island.py, run_funsearch.py, config.py</li>
+      <li>Define equation as a dict: { feature_name: coefficient } — sparse by construction</li>
+      <li>Feature library: 10 base features from SINDy + degree-2 interaction terms (66 candidates total)</li>
+      <li>Equation evaluator: given a dict and a province DataFrame, compute predicted dI_dt_norm and return R²</li>
+      <li>Seed loader: read sindy/results/m1_summary.csv and parse equation strings into dicts</li>
+    </ul>
+  </div>
+  <div class="arrow">↓</div>
+
+  <!-- Stage 2 -->
+  <div class="phase-row">
+    <div class="tile done" onclick="toggle(2)">
+      <div class="tile-header"><div class="tile-num">2</div><div class="tile-title">Fitness Evaluator</div></div>
+      <div class="tile-sub">evaluator.py · R² + spectral (0.7/0.3) · shape-weighted</div>
+      <div class="progress-bar-wrap"><div class="progress-bar" style="width:100%"></div></div>
+      <div class="badge-done">DONE</div>
+    </div>
+  </div>
+  <div class="detail-panel" id="detail-2">
+    <h3>Stage 2 — Fitness Evaluator</h3>
+    <ul>
+      <li>evaluate(equation_dict, province_df) → R² on 2022 validation year</li>
+      <li>fitness(equation_dict, island_provinces) → shape-weighted mean R² across all provinces in island</li>
+      <li>Guard against: division by zero, NaN/Inf predictions, equations with zero terms</li>
+      <li>Clip predicted values to ±1000 to prevent coefficient explosion cascading into fitness</li>
+      <li>Test evaluator on baseline SINDy equation — must reproduce M1 R² values from results CSV</li>
+    </ul>
+  </div>
+  <div class="arrow">↓</div>
+
+  <!-- Stage 3 -->
+  <div class="phase-row">
+    <div class="tile done" onclick="toggle(3)">
+      <div class="tile-header"><div class="tile-num">3</div><div class="tile-title">Mutation Operators</div></div>
+      <div class="tile-sub">mutator.py · 6 ops · gradient-guided perturb (35%) dominant</div>
+      <div class="progress-bar-wrap"><div class="progress-bar" style="width:100%"></div></div>
+      <div class="badge-done">DONE</div>
+    </div>
+  </div>
+  <div class="detail-panel" id="detail-3">
+    <h3>Stage 3 — Mutation Operators</h3>
+    <ul>
+      <li><b>perturb(eq)</b> — add Gaussian noise (σ=0.1) to one randomly chosen coefficient</li>
+      <li><b>add_term(eq)</b> — append a random feature from the library with a small random coefficient (drawn from N(0, 0.2))</li>
+      <li><b>remove_term(eq)</b> — drop the term with the smallest absolute coefficient</li>
+      <li><b>swap_feature(eq)</b> — replace one feature with a random different feature, keeping the coefficient</li>
+      <li><b>crossover(eq_a, eq_b)</b> — randomly merge terms from two parent equations (each term included with p=0.5)</li>
+      <li>Mutation is selected randomly with configurable probabilities; equations with > 10 terms are forced to remove_term</li>
+    </ul>
+  </div>
+  <div class="arrow">↓</div>
+
+  <!-- Stage 4 -->
+  <div class="phase-row">
+    <div class="tile active" onclick="toggle(4)">
+      <div class="tile-header"><div class="tile-num">4</div><div class="tile-title">Island Initialization</div></div>
+      <div class="tile-sub">island.py · 32 islands (one per province) · 20 equations each</div>
+      <div class="progress-bar-wrap"><div class="progress-bar orange" style="width:0%"></div></div>
+      <div class="badge-active">NOW</div>
+    </div>
+  </div>
+  <div class="detail-panel" id="detail-4">
+    <h3>Stage 4 — Island Initialization</h3>
+    <ul>
+      <li><b>32 islands, one per province</b> — controlled by ISLAND_MODE="32" in config.py; switchable to ISLAND_MODE="2" for coastal/inland grouping</li>
+      <li>Write <b>island.py</b>: Island class managing a population of 20 Equation objects per province</li>
+      <li>Seed population: load the SINDy M1 equation for the province as seed #1; fill remaining 19 slots by applying random perturbations to the seed</li>
+      <li>Each member stored with fitness, age, origin label ("seed" / "mutant" / "migrant")</li>
+      <li>Methods: initialize(), step() (one generation), migrate_in(eq), get_best() → Equation</li>
+    </ul>
+  </div>
+  <div class="arrow">↓</div>
+
+  <!-- Stage 5 -->
+  <div class="phase-row">
+    <div class="tile upcoming" onclick="toggle(5)">
+      <div class="tile-header"><div class="tile-num">5</div><div class="tile-title">Evolution Loop</div></div>
+      <div class="tile-sub">Tournament selection · N=200 generations · migration every 25 gen</div>
+      <div class="progress-bar-wrap"><div class="progress-bar" style="width:0%"></div></div>
+    </div>
+  </div>
+  <div class="detail-panel" id="detail-5">
+    <h3>Stage 5 — Evolution Loop</h3>
+    <ul>
+      <li>Each generation: sample 2 parents by tournament selection (k=3) → apply mutation → evaluate → replace weakest if improvement</li>
+      <li>Selection pressure: tournament size 3 — balanced between exploration and exploitation</li>
+      <li>Migration every 25 generations: copy top-1 equation from Island A into Island B population and vice versa</li>
+      <li>Early stopping: if best fitness has not improved by 0.005 R² in 50 consecutive generations, halt</li>
+      <li>Logging: save fitness history to evolution_log.csv every 10 generations; save best equation per island per generation</li>
+      <li>Target: beat SINDy baseline mean test R² of 0.39 on 2022 validation set</li>
+    </ul>
+  </div>
+  <div class="arrow">↓</div>
+
+  <!-- Stage 6 -->
+  <div class="phase-row">
+    <div class="tile upcoming" onclick="toggle(6)">
+      <div class="tile-header"><div class="tile-num">6</div><div class="tile-title">Results & Analysis</div></div>
+      <div class="tile-sub">Best evolved vs SINDy baseline · test R² · biological interpretation</div>
+      <div class="progress-bar-wrap"><div class="progress-bar" style="width:0%"></div></div>
+    </div>
+  </div>
+  <div class="detail-panel" id="detail-6">
+    <h3>Stage 6 — Results & Analysis</h3>
+    <ul>
+      <li>Evaluate best evolved equation from each island on held-out 2023 test data — compare directly to SINDy M1 baseline</li>
+      <li>Report: did FunSearch improve mean test R²? Did it discover new terms SINDy missed?</li>
+      <li>Coefficient sign check: do evolved terms remain biologically consistent (positive β for EIP, negative decay terms)?</li>
+      <li>Fitness convergence plot: best and mean fitness per generation for both islands</li>
+      <li>Cross-island transfer test: apply Island A best equation to Island B provinces and vice versa — does specialisation hurt generality?</li>
+      <li>Save best equations to funsearch/results/best_equations.csv — these become seeds for Project 3 (LLM-FunSearch)</li>
+    </ul>
+  </div>
+  <div class="arrow">↓</div>
+
+  <!-- Stage 7 -->
+  <div class="phase-row">
+    <div class="tile future" onclick="toggle(7)">
+      <div class="tile-header"><div class="tile-num">7</div><div class="tile-title">Report & Handoff to Project 3</div></div>
+      <div class="tile-sub">Document findings · export seeds for LLM-FunSearch</div>
+      <div class="progress-bar-wrap"><div class="progress-bar" style="width:0%"></div></div>
+    </div>
+  </div>
+  <div class="detail-panel" id="detail-7">
+    <h3>Stage 7 — Report & Handoff to Project 3</h3>
+    <ul>
+      <li>Write short results section documenting FunSearch improvement (or null result) relative to SINDy baseline</li>
+      <li>Export: best equations per island, fitness history, generation count, wall-clock runtime</li>
+      <li>Null result is also informative — if classical mutation cannot improve SINDy, that motivates the LLM mutation step in Project 3</li>
+      <li>Hand off best_equations.csv to funsearch_llm/ as seed population for Project 3</li>
+      <li>Update master roadmap to mark Project 2 complete and Project 3 active</li>
+    </ul>
+  </div>
+
+</div>
+
+<footer>
+  LLM-FunSearch DR Dengue Project &nbsp;·&nbsp; Project 2: FunSearch-SINDy (no LLM) &nbsp;·&nbsp;
+  <a href="../sindy/roadmap.html">← Project 1: SINDy</a>
+</footer>
+
+<script>
+function toggle(id) {
+  const panel = document.getElementById('detail-' + id);
+  if (!panel) return;
+  const isVisible = panel.classList.contains('visible');
+  document.querySelectorAll('.detail-panel').forEach(p => p.classList.remove('visible'));
+  if (!isVisible) panel.classList.add('visible');
+}
+</script>
+
+</body>
+</html>

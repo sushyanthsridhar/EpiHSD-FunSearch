@@ -1,0 +1,7 @@
+model,r2_val,r2_test
+GRU_global,0.1601,0.2899
+GRU_cluster0,-0.6317,-0.1043
+GRU_cluster1,-0.3493,0.2302
+GRU_cluster2,0.0134,0.1161
+GRU_cluster3,0.1822,0.2524
+GRU_cluster4,-0.2159,-0.0847

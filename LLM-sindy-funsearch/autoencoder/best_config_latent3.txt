@@ -1,0 +1,17 @@
+BEST HYPERPARAMETER CONFIG (Optuna BO)
+========================================
+val_r2        : 0.8443
+hidden_dims   : [256]
+n_layers      : 1
+h0            : 256
+pre_bottleneck: 32
+shallow_decoder: True
+use_batchnorm : True
+lr            : 0.002282489785211902
+dropout       : 0.3252312373697039
+weight_decay  : 2.5445082056429168e-05
+batch_size    : 64
+activation    : leakyrelu
+mse_weight    : 0.6685126282059848
+
+NOTE: test data was never used during tuning.

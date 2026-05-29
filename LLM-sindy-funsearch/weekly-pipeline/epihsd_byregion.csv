@@ -1,0 +1,65 @@
+province,cluster_id,split,r2_latent,r2_incidence
+01 Distrito Nacional,3,val,0.8057,0.5401
+01 Distrito Nacional,3,test,0.7927,0.5764
+02 Azua,0,val,0.7269,0.3826
+02 Azua,0,test,0.6901,-0.0005
+03 Baoruco,1,val,0.7569,0.0666
+03 Baoruco,1,test,0.7476,0.2156
+04 Barahona,3,val,0.784,0.0297
+04 Barahona,3,test,0.806,0.5391
+05 Dajabón,1,val,0.8394,-0.7272
+05 Dajabón,1,test,0.8173,0.3857
+06 Duarte,4,val,0.8375,0.3793
+06 Duarte,4,test,0.83,0.6695
+07 Elías Piña,1,val,0.7252,0.2773
+07 Elías Piña,1,test,0.7649,0.1572
+08 El Seibo,2,val,0.7983,-0.3421
+08 El Seibo,2,test,0.7912,0.1698
+09 Espaillat,3,val,0.7696,0.0928
+09 Espaillat,3,test,0.7853,0.5439
+10 Independencia,1,val,0.7401,-0.0269
+10 Independencia,1,test,0.8453,0.4913
+11 La Altagracia,2,val,0.8477,-0.0817
+11 La Altagracia,2,test,0.8195,0.3091
+12 La Romana,2,val,0.7561,-0.1778
+12 La Romana,2,test,0.772,0.4002
+13 La Vega,4,val,0.775,0.5168
+13 La Vega,4,test,0.7624,0.6263
+14 María Trinidad Sánchez,3,val,0.7816,-0.0089
+14 María Trinidad Sánchez,3,test,0.7984,0.315
+15 Monte Cristi,2,val,0.8789,0.2074
+15 Monte Cristi,2,test,0.8302,0.1828
+16 Pedernales,2,val,0.8027,0.1655
+16 Pedernales,2,test,0.8316,-0.1664
+17 Peravia,3,val,0.6313,0.5917
+17 Peravia,3,test,0.6754,0.3185
+18 Puerto Plata,3,val,0.7151,0.4744
+18 Puerto Plata,3,test,0.7475,0.3457
+19 Hermanas Mirabal,4,val,0.8039,0.1782
+19 Hermanas Mirabal,4,test,0.7978,0.3384
+20 Samaná,3,val,0.7708,0.271
+20 Samaná,3,test,0.7712,0.2671
+21 San Cristóbal,3,val,0.7278,0.4768
+21 San Cristóbal,3,test,0.7263,0.4297
+22 San Juan,0,val,0.764,-1.3392
+22 San Juan,0,test,0.7804,0.4878
+23 San Pedro de Macorís,3,val,0.75,0.0373
+23 San Pedro de Macorís,3,test,0.7723,0.3923
+24 Sánchez Ramírez,4,val,0.767,0.5704
+24 Sánchez Ramírez,4,test,0.8151,0.4948
+25 Santiago,4,val,0.837,0.6882
+25 Santiago,4,test,0.8063,0.6278
+26 Santiago Rodríguez,1,val,0.7607,-0.5109
+26 Santiago Rodríguez,1,test,0.7429,0.2964
+27 Valverde,1,val,0.7728,-0.6934
+27 Valverde,1,test,0.7568,0.3808
+28 Monseñor Nouel,4,val,0.717,0.6549
+28 Monseñor Nouel,4,test,0.7644,0.5103
+29 Monte Plata,4,val,0.8105,0.0358
+29 Monte Plata,4,test,0.7921,0.4888
+30 Hato Mayor,3,val,0.7835,0.154
+30 Hato Mayor,3,test,0.7921,0.5495
+31 San José de Ocoa,0,val,0.6933,0.0684
+31 San José de Ocoa,0,test,0.7343,0.3531
+32 Santo Domingo,3,val,0.8977,0.7095
+32 Santo Domingo,3,test,0.89,0.5449

@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LLM-FunSearch Architecture</title>
+<style>
+  :root {
+    --p1:        #2563eb;
+    --p1-light:  #eff6ff;
+    --p1-border: #93c5fd;
+    --p2:        #7c3aed;
+    --p2-light:  #f5f3ff;
+    --p2-border: #c4b5fd;
+    --p3:        #c2410c;
+    --p3-light:  #fff7ed;
+    --p3-border: #fdba74;
+    --text:      #1e293b;
+    --muted:     #64748b;
+    --panel-w:   380px;
+    --bg:        #f8fafc;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  /* ── Tabs ── */
+  .tab-bar {
+    display: flex;
+    background: white;
+    border-bottom: 2px solid #e2e8f0;
+    padding: 0 28px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .tab {
+    padding: 16px 22px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--muted);
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: color 0.15s, border-color 0.15s;
+    white-space: nowrap;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.p1.active { color: var(--p1); border-bottom-color: var(--p1); }
+  .tab.p2.active { color: var(--p2); border-bottom-color: var(--p2); }
+  .tab.p3.active { color: var(--p3); border-bottom-color: var(--p3); }
+
+  /* ── Phase panels ── */
+  .phase { display: none; padding: 36px 28px 60px; max-width: 700px; }
+  .phase.active { display: block; }
+
+  .phase-header { margin-bottom: 28px; }
+  .phase-header h2 { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; }
+  .phase-header p  { color: var(--muted); margin-top: 5px; font-size: 13px; }
+  .phase-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 3px 9px;
+    border-radius: 99px;
+    margin-bottom: 10px;
+  }
+  .p1 .phase-tag { background: var(--p1-light); color: var(--p1); }
+  .p2 .phase-tag { background: var(--p2-light); color: var(--p2); }
+  .p3 .phase-tag { background: var(--p3-light); color: var(--p3); }
+
+  /* ── Flow ── */
+  .flow {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+  }
+
+  /* ── Arrow ── */
+  .arr {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 6px 0;
+    color: #94a3b8;
+    font-size: 20px;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .arr-row {
+    display: flex;
+    gap: 16px;
+  }
+  .arr-row .arr { flex: 1; }
+
+  /* ── Blocks ── */
+  .block {
+    background: white;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 16px 20px;
+    cursor: pointer;
+    transition: box-shadow 0.15s, border-color 0.15s, transform 0.1s;
+    position: relative;
+    user-select: none;
+  }
+  .block:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.09);
+    transform: translateY(-1px);
+  }
+  .block.active-block {
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.25);
+  }
+
+  /* Phase tints on blocks */
+  .block.b1 { border-left: 4px solid var(--p1); }
+  .block.b1:hover { border-color: var(--p1); }
+  .block.b2 { border-left: 4px solid var(--p2); }
+  .block.b2:hover { border-color: var(--p2); }
+  .block.b3 { border-left: 4px solid var(--p3); }
+  .block.b3:hover { border-color: var(--p3); }
+  .block.output { border-left: 4px solid #22c55e; background: #f0fdf4; }
+  .block.seed   { border-left: 4px solid #f59e0b; background: #fffbeb; }
+  .block.loop   { border-style: dashed; border-left-style: solid; }
+
+  .block-title {
+    font-weight: 700;
+    font-size: 13.5px;
+    margin-bottom: 3px;
+  }
+  .block-file {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 10.5px;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .block-body {
+    font-size: 12px;
+    color: #475569;
+    line-height: 1.6;
+  }
+
+  /* hint */
+  .hint {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    font-size: 10px;
+    color: #cbd5e1;
+    pointer-events: none;
+  }
+  .block:hover .hint { color: #94a3b8; }
+
+  /* split row */
+  .split { display: flex; gap: 16px; }
+  .split .block { flex: 1; }
+
+  /* math inline */
+  .mi {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-style: italic;
+    font-size: 12.5px;
+    color: #1e293b;
+  }
+  /* math block */
+  .mb {
+    background: #f1f5f9;
+    border-left: 3px solid #94a3b8;
+    border-radius: 0 4px 4px 0;
+    padding: 7px 12px;
+    margin: 8px 0 4px;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: 13px;
+    color: #1e293b;
+    letter-spacing: 0.01em;
+  }
+
+  /* ── Info panel ── */
+  .panel-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.15);
+    z-index: 50;
+  }
+  .panel-backdrop.open { display: block; }
+
+  .info-panel {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    bottom: 0;
+    width: var(--panel-w);
+    background: white;
+    box-shadow: -6px 0 24px rgba(0,0,0,0.12);
+    z-index: 60;
+    overflow-y: auto;
+    transition: right 0.25s cubic-bezier(0.4,0,0.2,1);
+    padding: 28px 24px 48px;
+  }
+  .info-panel.open { right: 0; }
+
+  .panel-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    background: #f1f5f9;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--muted);
+    transition: background 0.1s;
+  }
+  .panel-close:hover { background: #e2e8f0; }
+
+  .panel-phase-tag {
+    display: inline-block;
+    font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    padding: 2px 8px; border-radius: 99px;
+    margin-bottom: 10px;
+  }
+  .panel-title { font-size: 17px; font-weight: 800; margin-bottom: 3px; padding-right: 36px; }
+  .panel-file  { font-family: monospace; font-size: 11px; color: var(--muted); margin-bottom: 20px; }
+
+  .panel-section { margin-bottom: 18px; }
+  .panel-section h4 {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #94a3b8;
+    margin-bottom: 7px;
+    font-weight: 700;
+  }
+  .panel-section p, .panel-section li {
+    font-size: 12.5px;
+    color: #334155;
+    line-height: 1.65;
+  }
+  .panel-section ul { padding-left: 16px; }
+  .panel-section li { margin-bottom: 4px; }
+
+  .panel-eq {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 10px 16px;
+    margin: 8px 0;
+    font-family: 'Georgia', serif;
+    font-size: 14px;
+    color: #0f172a;
+    text-align: center;
+    letter-spacing: 0.01em;
+  }
+
+  .panel-divider {
+    height: 1px;
+    background: #f1f5f9;
+    margin: 16px 0;
+  }
+
+  /* Tag colors */
+  .tag-p1 { background: var(--p1-light); color: var(--p1); }
+  .tag-p2 { background: var(--p2-light); color: var(--p2); }
+  .tag-p3 { background: var(--p3-light); color: var(--p3); }
+  .tag-out { background: #f0fdf4; color: #166534; }
+</style>
+</head>
+<body>
+
+<!-- ── Tab bar ─────────────────────────────────────── -->
+<div class="tab-bar">
+  <div class="tab p1 active" onclick="switchPhase(1)">Phase 1 &mdash; SINDy</div>
+  <div class="tab p2"        onclick="switchPhase(2)">Phase 2 &mdash; FunSearch-SINDy</div>
+  <div class="tab p3"        onclick="switchPhase(3)">Phase 3 &mdash; GA-FunSearch-SINDy</div>
+</div>
+
+<!-- ════════════════════════════════════════════════
+     PHASE 1
+════════════════════════════════════════════════ -->
+<div class="phase p1 active" id="phase1">
+  <div class="phase-header">
+    <div class="phase-tag">Phase 1</div>
+    <h2>SINDy</h2>
+    <p>Sparse Identification of Nonlinear Dynamics. Discovers governing equations directly from weekly dengue data across 32 DR provinces.</p>
+  </div>
+
+  <div class="flow">
+
+    <div class="block b1" id="b-p1-raw" onclick="open_panel('p1-raw', this)">
+      <span class="hint">click for details</span>
+      <div class="block-title">Raw Dengue Data</div>
+      <div class="block-file">input.csv</div>
+      <div class="block-body">32 DR provinces, 2015 to 2023, weekly resolution, 14,976 rows, 15 columns. Cases, temperature, rainfall, humidity, population.</div>
+    </div>
+
+    <div class="arr">&#8595;</div>
+
+    <div class="block b1" id="b-p1-feat" onclick="open_panel('p1-feat', this)">
+      <span class="hint">click for details</span>
+      <div class="block-title">Feature Engineering</div>
+      <div class="block-file">build_seir_features.py</div>
+      <div class="block-body">
+        Constructs SEIR-relevant predictors per province in temporal order.<br><br>
+        Susceptible proxy.
+        <div class="mb"><span class="mi">S(t) = (N &minus; &sum;&tau; I(&tau;)) / N</span></div>
+        Target variable.
+        <div class="mb"><span class="mi">dI/dt = I[t] &minus; I[t&minus;1]</span></div>
+        Thermal transmission forcing.
+        <div class="mb"><span class="mi">EIP(T) = e<sup>0.347T &minus; 9.17</sup></span>&nbsp; (Brady et al. 2013)</div>
+        Case lags at 1, 2, 4 weeks. Rolling incidence means at 4 and 8 weeks. Temperature lag at 4 weeks. Rainfall lag at 3 weeks. Cyclical season encoding via sin and cos of week number.
+      </div>
+    </div>
+
+    <div class="arr">&#8595;</div>
+
+    <div class="block b1 seed" id="b-p1-mat" onclick="open_panel('p1-mat', this)">
+      <span class="hint">click for details</span>
+      <div class="block-title">Feature Matrix</div>
+      <div class="block-file">sindy/seir_features.csv</div>
+      <div class="block-body">All engineered features assembled. NaN rows from early-window lags dropped per province. Shared input to both regression methods, and also consumed by Phase 2 and Phase 3.</div>
+    </div>
+
+    <div class="arr">&#8595;</div>
+
+    <div class="split">
+
+      <div class="block b1" id="b-p1-m1" onclick="open_panel('p1-m1', this)">
+        <span class="hint">click for details</span>
+        <div class="block-title">Per-Province Sparse Regression</div>
+        <div class="block-file">run_sindy.py &mdash; Method 1</div>
+        <div class="block-body">
+          One equation per province via STLSQ.
+          <div class="mb">&Theta;(X) &middot; &xi; = dI/dt</div>
+          Threshold &lambda; grid-searched on Val. Shape-weighted <span class="mi">R&sup2;</span> across all 32 provinces.
+        </div>
+      </div>
+
+      <div class="block b1" id="b-p1-m2" onclick="open_panel('p1-m2', this)">
+        <span class="hint">click for details</span>
+        <div class="block-title">Pooled Universal Regression</div>
+        <div class="block-file">run_sindy.py &mdash; Method 2</div>
+        <div class="block-body">
+          All 32 provinces stacked. One universal equation for all of DR.
+          <div class="mb">&Theta;(X<sub>pooled</sub>) &middot; &xi; = dI/dt</div>
+          Per-province and overall pooled <span class="mi">R&sup2;</span> reported.
+        </div>
+      </div>
+
+    </div>
+
+    <div class="arr-row">
+      <div class="arr">&#8595;</div>
+      <div class="arr">&#8595;</div>
+    </div>
+
+    <div class="split">
+
+      <div class="block output" id="b-p1-o1" onclick="open_panel('p1-o1', this)">
+        <span class="hint">click for details</span>
+        <div class="block-title">M1 Output</div>
+        <div class="block-file">sindy/results/m1_summary.csv</div>
+        <div class="block-body">Sparse equation per province, weighted <span class="mi">R&sup2;</span>, shape scores. Seed source for Phase 2.</div>
+      </div>
+
+      <div class="block output" id="b-p1-o2" onclick="open_panel('p1-o2', this)">
+        <span class="hint">click for details</span>
+        <div class="block-title">M2 Output</div>
+        <div class="block-file">sindy/results/m2_summary.csv</div>
+        <div class="block-body">Single universal equation. Per-province and pooled <span class="mi">R&sup2;</span>.</div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════
+     PHASE 2
+════════════════════════════════════════════════ -->
+<div class="phase p2" id="phase2">
+  <div class="phase-header">
+    <div class="phase-tag">Phase 2</div>
+    <h2>FunSearch-SINDy</h2>
+    <p>LLM-guided evolutionary search over equation term structures, seeded from Phase 1 SINDy discoveries.</p>
+  </div>
+
+  <div class="flow">
+
+    <div class="block b2 seed" id="b-p2-seed" onclick="open_panel('p2-seed', this)">
+      <span class="hint">click for details</span>
+      <div class="block-title">SINDy Seed Loader</div>
+      <div class="block-file">seed_loader.py</div>
+      <div class="block-body">Reads m1_summary.csv from Phase 1. Parses each province equation into an Equation object. Assigns provinces to islands by geography. Computes baseline val fitness per island.</div>
+    </div>
+
+    <div class="arr">&#8595;</div>
+
+    <div class="split">
+
+      <div class="block b2" id="b-p2-ia" onclick="open_panel('p2-ia', this)">
+        <span class="hint">click for details</span>
+        <div class="block-title">Island A &mdash; Coastal Provinces</div>
+        <div class="block-file">island.py</div>
+        <div class="block-body">Seeded with union of coastal province SINDy term structures. Coefficients re-fitted from data via OLS.</div>
+      </div>
+
+      <div class="block b2" id="b-p2-ib" onclick="open_panel('p2-ib', this)">
+        <span class="hint">click for details</span>
+        <div class="block-title">Island B &mdash; Inland Provinces</div>
+        <div class="block-file">island.py</div>
+        <div class="block-body">Seeded with union of inland province SINDy term structures. Coefficients re-fitted from data via OLS.</div>
+      </div>
+
+    </div>
+
+    <div class="arr">&#8595;</div>
+
+    <div class="block b2 loop" id="b-p2-evo" onclick="open_panel('p2-evo', this)">
+      <span class="hint">click for details</span>
+      <div class="block-title">Evolution Loop &mdash; per generation, per island</div>
+      <div class="block-file">island.py + mutator.py + evaluator.py</div>
+      <div class="block-body">
+        1. Tournament selection of parent equation from population.<br>
+        2. Structural mutation via one of 6 operators.<br>
+        <div class="mb">gradient perturb, perturb &xi;, add term, remove term, swap feature, crossover</div>
+        3. OLS coefficient refit.
+        <div class="mb">&xi; = (&Theta;<sup>T</sup>&Theta;)<sup>&minus;1</sup>&Theta;<sup>T</sup> &middot; dI/dt</div>
+        4. Fitness evaluation.
+        <div class="mb">F = 0.7 &middot; R&sup2; + 0.3 &middot; spectral score</div>
+        Shape-weighted across all provinces in island.<br>
+        5. Replace weakest population member if mutant improves fitness.
+      </div>
+    </div>
+
+    <div class="arr">&#8595;</div>
+
+    <div class="block b2" id="b-p2-eval" onclick="open_panel('p2-eval', this)">
+      <span class="hint">click for details</span>
+      <div class="block-title">Final Holdout Evaluation</div>
+      <div class="block-file">run_funsearch.py + evaluator.py</div>
+      <div class="block-body">Test years 2022 to 2023, never seen during evolution. Per-province <span class="mi">R&sup2;</span> and spectral score. Comparison against SINDy M1 baseline.</div>
+    </div>
+
+    <div class="arr">&#8595;</div>
+
+    <div class="block output" id="b-p2-out" onclick="open_panel('p2-out', this)">
+      <span class="hint">click for details</span>
+      <div class="block-title">Outputs</div>
+      <div class="block-file">funsearch/results/</div>
+      <div class="block-body">best_equations.csv, fitness_history.csv, province_breakdown.csv, final_summary.csv.</div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════
+     PHASE 3
+════════════════════════════════════════════════ -->
+<div class="phase p3" id="phase3">
+  <div class="phase-header">
+    <div class="phase-tag">Phase 3</div>
+    <h2>GA-FunSearch-SINDy</h2>
+    <p>Genetic algorithm coordinating N parallel islands, each using simulated annealing, with LLM-guided cross-island mutation.</p>
+  </div>
+
+  <div class="flow">
+
+    <div class="block b3" id="b-p3-flt" onclick="open_panel('p3-flt', this)">
+      <span class="hint">click for details</span>
+      <div class="block-title">Data Quality Filter</div>
+      <div class="block-file">run_ga_sindy.py</div>
+      <div class="block-body">Drop provinces where zero rate is at least 40 percent, or total training cases are below 1,000. 11 provinces survive out of 32.</div>
+    </div>
+
+    <div class="arr">&#8595;</div>
+
+    <div class="block b3" id="b-p3-isl" onclick="open_panel('p3-isl', this)">
+      <span class="hint">click for details</span>
+      <div class="block-title">N Parallel Islands Initialised</div>
+      <div class="block-file">island.py + config.py</div>
+      <div class="block-body">Unlike Phase 2, islands no longer represent geographic groups. Every island trains on all 11 quality-passing provinces and independently searches the 66-term library. N is tuned via Bayesian optimisation.</div>
+    </div>
+
+    <div class="arr">&#8595;</div>
+
+    <div class="block b3 loop" id="b-p3-epoch" onclick="open_panel('p3-epoch', this)">
+      <span class="hint">click for details</span>
+      <div class="block-title">Epoch Loop</div>
+      <div class="block-file">ga_coordinator.py</div>
+      <div class="block-body">Runs MAX_EPOCHS times. Each epoch proceeds through the four stages below.</div>
+    </div>
+
+    <div class="arr">&#8595;</div>
+
+    <div class="block b3 loop" id="b-p3-sa" onclick="open_panel('p3-sa', this)">
+      <span class="hint">click for details</span>
+      <div class="block-title">Simulated Annealing &mdash; per Island</div>
+      <div class="block-file">island.py</div>
+      <div class="block-body">
+        Each island runs GENERATIONS_PER_EPOCH SA steps independently.<br>
+        Structural mutation &rarr; OLS refit &rarr; compute &Delta;fitness.<br>
+        Metropolis acceptance criterion.
+        <div class="mb">accept if &Delta; &gt; 0, &nbsp; else accept with probability e<sup>&Delta;/T</sup></div>
+        Temperature cooling each generation.
+        <div class="mb">T &larr; T &middot; &alpha;&nbsp; where &alpha; = SA_COOLING_RATE</div>
+      </div>
+    </div>
+
+    <div class="arr">&#8595;</div>
+
+    <div class="block b3" id="b-p3-ga" onclick="open_panel('p3-ga', this)">
+      <span class="hint">click for details</span>
+      <div class="block-title">GA Cross-Island Selection and Crossover</div>
+      <div class="block-file">ga_coordinator.py</div>
+      <div class="block-body">
+        1. Collect champion equation from each island.<br>
+        2. Tournament select top K champions by fitness.<br>
+        3. Crossover top 2 to produce offspring term structure.<br>
+        <div class="mb">each term included with probability 0.5</div>
+      </div>
+    </div>
+
+    <div class="arr">&#8595;</div>
+
+    <div class="block b3" id="b-p3-llm" onclick="open_panel('p3-llm', this)">
+      <span class="hint">click for details</span>
+      <div class="block-title">LLM Structural Mutation</div>
+      <div class="block-file">llm_mutator.py</div>
+      <div class="block-body">Takes crossover offspring. Generates N structurally diverse variants. Algorithmic mode uses add, remove, swap, crossover operators. Claude API mode sends equation plus fitness context to Claude, which proposes one structural change. Each variant is OLS-refitted via sindy_fitter.py. Best variant selected as GA migrant.</div>
+    </div>
+
+    <div class="arr">&#8595;</div>
+
+    <div class="block b3" id="b-p3-inj" onclick="open_panel('p3-inj', this)">
+      <span class="hint">click for details</span>
+      <div class="block-title">Migrant Injection into All Islands</div>
+      <div class="block-file">ga_coordinator.py</div>
+      <div class="block-body">GA migrant broadcast to all islands simultaneously. Replaces weakest member unconditionally. Forces cross-island gene flow every epoch regardless of fitness improvement.</div>
+    </div>
+
+    <div class="arr">&#8595;</div>
+
+    <div class="block b3" id="b-p3-ev" onclick="open_panel('p3-ev', this)">
+      <span class="hint">click for details</span>
+      <div class="block-title">Final Holdout Evaluation</div>
+      <div class="block-file">run_ga_sindy.py</div>
+      <div class="block-body">Test years 2022 to 2023, held out throughout. Per-province <span class="mi">R&sup2;</span> and spectral score. Global best equation across all islands selected.</div>
+    </div>
+
+    <div class="arr">&#8595;</div>
+
+    <div class="split">
+
+      <div class="block output" id="b-p3-out" onclick="open_panel('p3-out', this)">
+        <span class="hint">click for details</span>
+        <div class="block-title">Outputs</div>
+        <div class="block-file">funsearch-ga-sindy/results/</div>
+        <div class="block-body">best_equation.csv, epoch_history.csv, province_breakdown.csv, final_summary.txt, run_ga_sindy.log.</div>
+      </div>
+
+      <div class="block b3 seed" id="b-p3-bo" onclick="open_panel('p3-bo', this)">
+        <span class="hint">click for details</span>
+        <div class="block-title">Bayesian Hyperparameter Tuning</div>
+        <div class="block-file">tune_n_islands.py &mdash; Optuna TPE</div>
+        <div class="block-body">Tunes N islands, SA temperatures, generations per epoch, early stop patience, max terms, <span class="mi">R&sup2;</span> weight, LLM suggestion count, and mutation probabilities.</div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ── Info panel ─────────────────────────────── -->
+<div class="panel-backdrop" id="backdrop" onclick="close_panel()"></div>
+<div class="info-panel" id="info-panel">
+  <div class="panel-close" onclick="close_panel()">&#x2715;</div>
+  <div class="panel-phase-tag" id="ptag"></div>
+  <div class="panel-title" id="ptitle"></div>
+  <div class="panel-file"  id="pfile"></div>
+  <div id="pbody"></div>
+</div>
+
+
+<script>
+/* ── Phase switching ──────────────────────────── */
+function switchPhase(n) {
+  document.querySelectorAll('.phase').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('phase' + n).classList.add('active');
+  document.querySelectorAll('.tab')[n - 1].classList.add('active');
+  close_panel();
+}
+
+/* ── Panel data ───────────────────────────────── */
+const DATA = {
+
+  /* ── Phase 1 ── */
+  'p1-raw': {
+    tag: 'Phase 1', tagClass: 'tag-p1',
+    title: 'Raw Dengue Data',
+    file: 'data_processing/input.csv',
+    sections: [
+      { h: 'Dataset', body: '32 Dominican Republic provinces. Weekly granularity from 2015 to 2023. 14,976 rows by 15 columns. Every row represents one province in one week.' },
+      { h: 'Columns', body: 'province, year, month, week, total_cases, avg_temp, max_temp, min_temp, avg_rainfall, max_rainfall, min_rainfall, avg_humidity, max_humidity, min_humidity, population.' },
+      { h: 'Assembly', body: 'Merged by build_input.py from four raw folders. Demographics with case counts, weekly temperature, weekly rainfall, weekly humidity, and province-level population estimates for 2015 to 2023.' },
+    ]
+  },
+
+  'p1-feat': {
+    tag: 'Phase 1', tagClass: 'tag-p1',
+    title: 'Feature Engineering',
+    file: 'sindy/build_seir_features.py',
+    sections: [
+      { h: 'Susceptible proxy',
+        eq: 'S(t) = (N &minus; &sum;<sub>&tau;&le;t</sub> I(&tau;)) / N',
+        body: 'Approximates the fraction of the population not yet infected. Clamped to the interval 0 to 1 to handle census undercount relative to cumulative reported cases.' },
+      { h: 'Target variable',
+        eq: 'dI/dt = I[t] &minus; I[t&minus;1]',
+        body: 'Week-over-week change in incidence. This is the right-hand side target that the SINDy regression must explain. Stored as dI_dt_norm, normalised per 100k population.' },
+      { h: 'Thermal transmission forcing',
+        eq: 'EIP(T) = e<sup>0.347T &minus; 9.17</sup>',
+        body: 'Extrinsic incubation period thermal function from Brady et al. 2013. Higher temperature shortens the EIP, accelerating viral development inside the mosquito and increasing transmission rate. Bounded to 0.01 to 20.' },
+      { h: 'Lag features', body: 'cases_lag1, cases_lag2, cases_lag4. Weekly lags of incidence. temp_lag4 aligns temperature with the approximate 4-week EIP at 28 degrees. rainfall_lag3 captures the 3-week delay from rainfall to mosquito breeding to biting.' },
+      { h: 'Rolling averages', body: 'rolling_cases_4wk is a 4-week centred rolling mean. rolling_cases_8wk is an 8-week rolling mean capturing the slow epidemic trend.' },
+      { h: 'Cyclical season encoding',
+        eq: 'sin(2&pi;w/52),&nbsp; cos(2&pi;w/52)',
+        body: 'Encodes week-of-year smoothly so that week 52 is numerically close to week 1. Captures the annual dengue transmission season without a discontinuity.' },
+    ]
+  },
+
+  'p1-mat': {
+    tag: 'Phase 1', tagClass: 'tag-p1',
+    title: 'Feature Matrix',
+    file: 'sindy/seir_features.csv',
+    sections: [
+      { h: 'Contents', body: 'All engineered features joined to the province and time identifiers. NaN rows from early-window lags are dropped per province, so the matrix starts from the first fully-defined week.' },
+      { h: 'Downstream use', body: 'This CSV is the shared input to both SINDy regression methods in Phase 1. It is also read directly by seed_loader.py in Phase 2 and by config.py in Phase 3.' },
+    ]
+  },
+
+  'p1-m1': {
+    tag: 'Phase 1', tagClass: 'tag-p1',
+    title: 'Per-Province Sparse Regression',
+    file: 'sindy/run_sindy.py &mdash; Method 1',
+    sections: [
+      { h: 'Goal', body: 'Discover one sparse governing equation per province that explains dI/dt from the engineered feature library.' },
+      { h: 'SINDy formulation',
+        eq: '&Theta;(X) &middot; &xi; = dI/dt',
+        body: '&Theta;(X) is the candidate library matrix, a matrix of all feature terms evaluated at each time step. &xi; is the sparse coefficient vector discovered by Sequentially Thresholded Least Squares, STLSQ.' },
+      { h: 'Temporal split', body: 'Train 2015 to 2021, approximately 360 weeks per province. Val 2022, 52 weeks, used to grid-search the sparsity threshold &lambda;. Test 2023, 52 weeks, reported as the final R&sup2; and never touched during fitting.' },
+      { h: 'Shape-weighted R&sup2;',
+        eq: 'R&#773;&sup2; = &sum;(s<sub>i</sub> &middot; R&sup2;<sub>i</sub>) / &sum; s<sub>i</sub>',
+        body: 'Shape score s<sub>i</sub> = max(I<sub>i</sub>) / mean(I<sub>i</sub>). Provinces with sharper epidemic peaks receive higher weight because they carry cleaner dynamical signal.' },
+      { h: 'Output', body: 'One sparse equation per province written to m1_summary.csv. These equations become the seed term structures for Phase 2.' },
+    ]
+  },
+
+  'p1-m2': {
+    tag: 'Phase 1', tagClass: 'tag-p1',
+    title: 'Pooled Universal Regression',
+    file: 'sindy/run_sindy.py &mdash; Method 2',
+    sections: [
+      { h: 'Goal', body: 'Test whether a single universal governing equation holds across all 32 DR provinces simultaneously.' },
+      { h: 'SINDy formulation',
+        eq: '&Theta;(X<sub>pooled</sub>) &middot; &xi; = dI/dt<sub>pooled</sub>',
+        body: 'All 32 provinces stacked into one design matrix, approximately 11,776 training rows. A single STLSQ fit discovers one universal &xi;.' },
+      { h: 'Temporal split', body: 'Train 2015 to 2021, approximately 11,776 rows. Val 2022, approximately 1,664 rows. Test 2023, approximately 1,664 rows.' },
+      { h: 'Output', body: 'One universal equation string with per-province R&sup2; on test set and overall pooled R&sup2; in m2_summary.csv.' },
+    ]
+  },
+
+  'p1-o1': {
+    tag: 'Output', tagClass: 'tag-out',
+    title: 'Method 1 Output',
+    file: 'sindy/results/m1_summary.csv',
+    sections: [
+      { h: 'Per-province columns', body: 'Province name, discovered equation as a string, all non-zero term names and coefficients, train R&sup2;, val R&sup2;, test R&sup2;, shape score, contribution to weighted R&sup2;.' },
+      { h: 'Bridge to Phase 2', body: 'seed_loader.py in Phase 2 reads this file. Each row is parsed back into an Equation object and assigned to Island A or Island B depending on whether the province is coastal or inland.' },
+    ]
+  },
+
+  'p1-o2': {
+    tag: 'Output', tagClass: 'tag-out',
+    title: 'Method 2 Output',
+    file: 'sindy/results/m2_summary.csv',
+    sections: [
+      { h: 'Contents', body: 'Universal equation string, per-province R&sup2; on test set for all 32 provinces, and overall pooled R&sup2;.' },
+    ]
+  },
+
+  /* ── Phase 2 ── */
+  'p2-seed': {
+    tag: 'Phase 2', tagClass: 'tag-p2',
+    title: 'SINDy Seed Loader',
+    file: 'funsearch/seed_loader.py',
+    sections: [
+      { h: 'Role', body: 'Bridge from Phase 1 to Phase 2. Reads m1_summary.csv and seir_features.csv. Parses each row into an Equation object representing the province SINDy discovery.' },
+      { h: 'Island assignment', body: 'Provinces classified as coastal or inland by geography. Coastal provinces form Island A. Inland provinces form Island B.' },
+      { h: 'IslandBundle output', body: 'Each bundle carries island name, province names, province DataFrames for all years, train-only DataFrames, val-only DataFrames, seed Equation objects for each province, and baseline fitness computed on val years.' },
+    ]
+  },
+
+  'p2-ia': {
+    tag: 'Phase 2', tagClass: 'tag-p2',
+    title: 'Island A &mdash; Coastal Provinces',
+    file: 'funsearch/island.py',
+    sections: [
+      { h: 'Seeding', body: 'Seed term structure is the union of all coastal province SINDy M1 term sets. If coastal province P1 discovered terms A and B, and P2 discovered B and C, then Island A is seeded with terms A, B, and C.' },
+      { h: 'Coefficient initialisation', body: 'Coefficients are NOT carried over from SINDy. They are re-solved from scratch via OLS on the full seed term structure and Island A training data.' },
+      { h: 'Population', body: 'Maintains a fixed-size population of Equation objects. Tournament selection draws parents. Mutation and OLS produce candidates. Weakest member replaced if candidate is better.' },
+    ]
+  },
+
+  'p2-ib': {
+    tag: 'Phase 2', tagClass: 'tag-p2',
+    title: 'Island B &mdash; Inland Provinces',
+    file: 'funsearch/island.py',
+    sections: [
+      { h: 'Seeding', body: 'Seed term structure is the union of all inland province SINDy M1 term sets.' },
+      { h: 'Rationale', body: 'Inland provinces tend to have lower rainfall and higher temperature variance than coastal ones. Separate islands allow the search to explore equation structures that are most relevant to each climate regime independently.' },
+    ]
+  },
+
+  'p2-evo': {
+    tag: 'Phase 2', tagClass: 'tag-p2',
+    title: 'Evolution Loop',
+    file: 'funsearch/island.py + mutator.py + evaluator.py',
+    sections: [
+      { h: 'Equation representation', body: 'An equation is a sparse linear combination of at most MAX_TERMS entries from the 66-term library. Terms can be base features, squared features, or pairwise products. The evolution searches over which terms to include.' },
+      { h: '6 mutation operators',
+        body: 'Gradient perturb: finite-difference gradient of fitness with respect to each &xi;<sub>i</sub>, nudge the coefficient with the steepest positive gradient. Perturb: Gaussian noise on one randomly chosen &xi;<sub>i</sub>. Add term: insert a random library term with small initial coefficient. Remove term: drop the term with the smallest absolute coefficient value. Swap feature: replace one term with a different randomly chosen library term. Crossover: merge term sets from two parent equations, each term included with probability 0.5.' },
+      { h: 'OLS coefficient refit',
+        eq: '&xi; = (&Theta;<sup>T</sup>&Theta;)<sup>&minus;1</sup> &Theta;<sup>T</sup> dI/dt',
+        body: 'After every structural change, all coefficients are re-solved from scratch on training data. No sparsity thresholding at this stage. The structural search handles sparsity, OLS handles coefficient values.' },
+      { h: 'Fitness function',
+        eq: 'F = 0.7 &middot; R&sup2; + 0.3 &middot; F<sub>spectral</sub>',
+        body: 'R&sup2; measures predictive accuracy on val years. Spectral score F<sub>spectral</sub> measures Fourier similarity at the first 5 non-DC frequencies. It rewards equations that reproduce epidemic periodicity, not just variance. Both are shape-weighted across provinces in the island.' },
+      { h: 'Data split', body: 'Train 2015 to 2019. Val 2020 to 2021, used as fitness signal throughout all generations. Test 2022 to 2023, held out and only evaluated at the very end.' },
+    ]
+  },
+
+  'p2-eval': {
+    tag: 'Phase 2', tagClass: 'tag-p2',
+    title: 'Final Holdout Evaluation',
+    file: 'funsearch/run_funsearch.py + evaluator.py',
+    sections: [
+      { h: 'Process', body: 'After all generations complete, the best equation from each island is scored on the held-out test years 2022 to 2023. These years were never used during any fitness computation.' },
+      { h: 'Comparison', body: 'Results compared against SINDy M1 per-province R&sup2; baseline. Per-province R&sup2;, spectral score, and equation term structure are reported side by side.' },
+    ]
+  },
+
+  'p2-out': {
+    tag: 'Output', tagClass: 'tag-out',
+    title: 'Phase 2 Outputs',
+    file: 'funsearch/results/',
+    sections: [
+      { h: 'Files', body: 'best_equations.csv contains the best equation per island. fitness_history.csv records the best fitness at every generation. province_breakdown.csv gives per-province R&sup2; and spectral score across train, val, and test splits. final_summary.csv shows Island A and Island B equations versus the SINDy M1 baseline.' },
+    ]
+  },
+
+  /* ── Phase 3 ── */
+  'p3-flt': {
+    tag: 'Phase 3', tagClass: 'tag-p3',
+    title: 'Data Quality Filter',
+    file: 'funsearch-ga-sindy/run_ga_sindy.py',
+    sections: [
+      { h: 'Criteria', body: 'A province is dropped if zero_pct is at least 0.40, meaning more than 40 percent of training weeks have zero reported cases, or if total training cases are below 1,000. Provinces with insufficient signal produce unreliable OLS fits and distort the fitness landscape.' },
+      { h: 'Result', body: '11 provinces pass the filter out of 32. All subsequent fitting, evaluation, and evolution uses only these 11 provinces.' },
+    ]
+  },
+
+  'p3-isl': {
+    tag: 'Phase 3', tagClass: 'tag-p3',
+    title: 'N Parallel Islands Initialised',
+    file: 'funsearch-ga-sindy/island.py + config.py',
+    sections: [
+      { h: 'Key change from Phase 2', body: 'Islands no longer represent geographic province groupings. Every island trains on all 11 quality-passing provinces. Islands are independent parallel evolutionary searches that compete and share information via the GA coordinator above them.' },
+      { h: 'Search space', body: '66-term equation library. Base features, squared features, pairwise products. Identical to Phase 2 library.' },
+      { h: 'N selection', body: 'Optimal number of islands found by Bayesian optimisation in tune_n_islands.py. Optuna TPE sampler explores the range 2 to 8.' },
+    ]
+  },
+
+  'p3-epoch': {
+    tag: 'Phase 3', tagClass: 'tag-p3',
+    title: 'Epoch Loop',
+    file: 'funsearch-ga-sindy/ga_coordinator.py',
+    sections: [
+      { h: 'Structure', body: 'Runs for MAX_EPOCHS total epochs. Each epoch consists of two stages. First all islands run their SA steps independently. Then the GA coordinator collects champions, runs crossover and LLM mutation, and injects the migrant back into all islands.' },
+    ]
+  },
+
+  'p3-sa': {
+    tag: 'Phase 3', tagClass: 'tag-p3',
+    title: 'Simulated Annealing &mdash; per Island',
+    file: 'funsearch-ga-sindy/island.py',
+    sections: [
+      { h: 'Upgrade from Phase 2', body: 'Phase 2 used a simple accept-only-if-better rule, which is population-based random search. Phase 3 replaces this with SA, which can escape local optima early in the search and converge reliably as temperature falls.' },
+      { h: 'Metropolis criterion',
+        eq: 'P(accept) = e<sup>&Delta;F / T</sup>&nbsp; when &Delta;F &lt; 0',
+        body: '&Delta;F = new_fitness &minus; old_fitness. When &Delta;F is positive the move is always accepted. When negative, the probability of accepting falls exponentially with the magnitude of the deterioration and with decreasing temperature T.' },
+      { h: 'Cooling schedule',
+        eq: 'T<sub>k+1</sub> = T<sub>k</sub> &middot; &alpha;',
+        body: '&alpha; is SA_COOLING_RATE, a constant less than 1. Temperature starts at SA_T_INITIAL and decays to SA_T_FINAL over the generations of one epoch. Both boundary temperatures are tuned by Bayesian optimisation.' },
+      { h: 'OLS refit at each step', body: 'sindy_fitter.refit() is called after every structural mutation. Coefficients are pooled across all 11 provinces in chronological order and solved via OLS.' },
+    ]
+  },
+
+  'p3-ga': {
+    tag: 'Phase 3', tagClass: 'tag-p3',
+    title: 'GA Cross-Island Selection and Crossover',
+    file: 'funsearch-ga-sindy/ga_coordinator.py',
+    sections: [
+      { h: 'Champion collection', body: 'After each SA epoch, the coordinator requests the best equation found this epoch from every island. One champion per island.' },
+      { h: 'Tournament selection', body: 'GA_TOURNAMENT_K champions are entered into a tournament. The top 2 by fitness are selected as parents for crossover.' },
+      { h: 'Crossover',
+        eq: 'T<sub>offspring</sub> = { t &isin; T<sub>A</sub> &cup; T<sub>B</sub> : Bernoulli(0.5) = 1 }',
+        body: 'Each term from the union of the two parent term sets is independently included in the offspring with probability 0.5. Coefficients for the offspring are then re-fitted via OLS.' },
+    ]
+  },
+
+  'p3-llm': {
+    tag: 'Phase 3', tagClass: 'tag-p3',
+    title: 'LLM Structural Mutation',
+    file: 'funsearch-ga-sindy/llm_mutator.py',
+    sections: [
+      { h: 'Algorithmic mode', body: 'Uses the same add, remove, swap, and crossover structural operators as Phase 2. Fully deterministic given a random seed. Generates N_LLM_SUGGESTIONS variants by applying different operator sequences.' },
+      { h: 'Claude API mode', body: 'Constructs a prompt containing the current best equation as a term list plus its fitness context. Claude responds with a proposed structural change, specifying which term to add or remove. The response is parsed and applied to the offspring equation.' },
+      { h: 'Variant selection', body: 'All N variants are OLS-refitted via sindy_fitter.refit(). Each is scored on the val set. The highest-fitness variant becomes the GA migrant for injection.' },
+    ]
+  },
+
+  'p3-inj': {
+    tag: 'Phase 3', tagClass: 'tag-p3',
+    title: 'Migrant Injection',
+    file: 'funsearch-ga-sindy/ga_coordinator.py',
+    sections: [
+      { h: 'Mechanism', body: 'The GA migrant is broadcast to all N islands simultaneously. In each island it replaces the weakest current population member, unconditionally.' },
+      { h: 'Why unconditional', body: 'Guaranteed cross-island gene flow every epoch. If injection were conditional on improving the island best, islands that are already strong would never receive cross-island variation, leading to convergence to the same local optima. The SA within each island handles subsequent acceptance or rejection of the injected structure.' },
+    ]
+  },
+
+  'p3-ev': {
+    tag: 'Phase 3', tagClass: 'tag-p3',
+    title: 'Final Holdout Evaluation',
+    file: 'funsearch-ga-sindy/run_ga_sindy.py',
+    sections: [
+      { h: 'Process', body: 'After MAX_EPOCHS the global best equation across all islands is identified. It is then scored for the first time on test years 2022 to 2023, which were held out throughout the entire evolution.' },
+      { h: 'Metrics', body: 'Per-province R&sup2;, spectral score, and their shape-weighted aggregate on train, val, and test splits. Final equation term list and coefficient values.' },
+    ]
+  },
+
+  'p3-out': {
+    tag: 'Output', tagClass: 'tag-out',
+    title: 'Phase 3 Outputs',
+    file: 'funsearch-ga-sindy/results/',
+    sections: [
+      { h: 'Files', body: 'best_equation.csv contains the final equation with per-province test R&sup2;. epoch_history.csv records the global best fitness per epoch. province_breakdown.csv gives R&sup2; and spectral score on all three splits. final_summary.txt is a human-readable run summary. run_ga_sindy.log is the full console log.' },
+    ]
+  },
+
+  'p3-bo': {
+    tag: 'Phase 3', tagClass: 'tag-p3',
+    title: 'Bayesian Hyperparameter Tuning',
+    file: 'funsearch-ga-sindy/tune_n_islands.py',
+    sections: [
+      { h: 'Method', body: 'Optuna with TPE, Tree-structured Parzen Estimator sampler. After each trial Optuna models the fitness landscape over the hyperparameter space and proposes the most promising next configuration.' },
+      { h: 'Hyperparameters tuned', body: 'n_islands from 2 to 8. SA initial temperature from 0.1 to 2.0. SA final temperature from 0.0001 to 0.05. Generations per epoch from 50 to 200. Early stop patience from 20 to 80. Max terms per equation from 5 to 15. R&sup2; weight in fitness from 0.5 to 0.95. N LLM suggestions from 1 to 5. p_add and p_remove mutation probabilities.' },
+      { h: 'Output', body: 'bo_tuning.csv with all trial results. bo_best_params.csv with the winning configuration. bo_tuning.log.' },
+    ]
+  },
+};
+
+/* ── Panel open / close ────────────────────── */
+let active_block = null;
+
+function open_panel(id, el) {
+  const d = DATA[id];
+  if (!d) return;
+
+  if (active_block) active_block.classList.remove('active-block');
+  active_block = el;
+  el.classList.add('active-block');
+
+  document.getElementById('ptag').className   = 'panel-phase-tag ' + d.tagClass;
+  document.getElementById('ptag').innerHTML   = d.tag;
+  document.getElementById('ptitle').innerHTML = d.title;
+  document.getElementById('pfile').innerHTML  = d.file;
+
+  let html = '';
+  for (const s of d.sections) {
+    html += '<div class="panel-section"><h4>' + s.h + '</h4>';
+    if (s.eq) html += '<div class="panel-eq">' + s.eq + '</div>';
+    html += '<p>' + s.body + '</p></div>';
+    html += '<div class="panel-divider"></div>';
+  }
+  document.getElementById('pbody').innerHTML = html;
+
+  document.getElementById('info-panel').classList.add('open');
+  document.getElementById('backdrop').classList.add('open');
+}
+
+function close_panel() {
+  document.getElementById('info-panel').classList.remove('open');
+  document.getElementById('backdrop').classList.remove('open');
+  if (active_block) {
+    active_block.classList.remove('active-block');
+    active_block = null;
+  }
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') close_panel();
+});
+</script>
+</body>
+</html>

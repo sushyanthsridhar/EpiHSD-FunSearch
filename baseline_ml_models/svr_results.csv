@@ -1,0 +1,2 @@
+model,val_r2,val_rmse,test_r2,test_rmse,params
+SVR,0.7917,2.8635,0.2698,21.9053,"{'C': 10.0, 'epsilon': 0.1}"

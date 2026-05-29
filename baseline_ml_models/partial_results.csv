@@ -1,0 +1,4 @@
+model,val_r2,val_rmse,test_r2,test_rmse,params
+Linear Regression,0.8173,2.682,0.6113,15.9827,{}
+Ridge,0.8268,2.6112,0.563,16.9452,{'alpha': 1000}
+Lasso,0.8348,2.5507,0.6892,14.2915,{'alpha': 1}

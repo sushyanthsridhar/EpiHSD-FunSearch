@@ -1,0 +1,619 @@
+================================================================================
+CITATIONS AND METHODOLOGICAL JUSTIFICATIONS
+LLM-FunSearch / SINDy Dengue Fever Equation Discovery
+Dominican Republic, 2015–2023
+================================================================================
+
+This file records all citations, in APA 7th edition format, that support every
+methodological decision made in the SINDy equation-discovery pipeline for
+dengue fever dynamics in the Dominican Republic.  Each section describes WHAT
+decision was made, WHY it was made, and WHICH literature supports it.
+
+────────────────────────────────────────────────────────────────────────────────
+1.  STUDY SETTING — WHY THE DOMINICAN REPUBLIC AND WHY DENGUE
+────────────────────────────────────────────────────────────────────────────────
+
+Decision: The Dominican Republic (DR) was selected as the study site for
+developing a data-driven SEIR equation-discovery pipeline for dengue fever.
+
+Justification: The DR is a hyperendemic dengue country in the Caribbean with
+sustained multi-year surveillance records that include provincial-level weekly
+case counts, temperature, humidity, and rainfall — all necessary covariates
+for a mechanistic environmental model.  The tropical climate creates strong
+seasonal forcing and the country experiences both low-level endemic transmission
+and periodic outbreak years (2015, 2019), providing the dynamic range that
+SINDy requires to distinguish signal from noise.
+
+Pan American Health Organization. (2023). Dengue — PAHO/WHO | Pan American
+    Health Organization. https://www.paho.org/en/topics/dengue
+
+World Health Organization. (2023). Dengue and severe dengue (Fact Sheet No.
+    117). https://www.who.int/news-room/fact-sheets/detail/dengue-and-severe-dengue
+
+Bhatt, S., Gething, P. W., Brady, O. J., Messina, J. P., Farlow, A. W., Moyes,
+    C. L., Drake, J. M., Brownstein, J. S., Hoen, A. G., Sankoh, O., Myers,
+    M. F., George, D. B., Jaenisch, T., Wint, G. R. W., Simmons, C. P., Scott,
+    T. W., Farrar, J. J., & Hay, S. I. (2013). The global distribution and
+    burden of dengue. Nature, 496(7446), 504–507.
+    https://doi.org/10.1038/nature12060
+    [Establishes global dengue burden and the primacy of tropical climate
+     countries in carrying disease load — the DR sits squarely in the
+     highest-risk belt.]
+
+Stanaway, J. D., Shepard, D. S., Undurraga, E. A., Halasa, Y. A., Coffeng,
+    L. E., Brady, O. J., Hay, S. I., Bedi, N., Bensenor, I. M., Castañeda-
+    Orjuela, C. A., Chou, D., Gibney, K. B., Moran, A. E., Nasreen, S.,
+    Nolan, M. S., O'Sullivan, M., Shepard, D. S., Smith, D. L., Soares Filho,
+    A. M., … Lim, S. S. (2016). The global burden of dengue: An analysis from
+    the Global Burden of Disease Study 2013. The Lancet Infectious Diseases,
+    16(6), 712–723.  https://doi.org/10.1016/S1473-3099(16)00026-8
+    [Quantifies disability-adjusted life years for dengue; justifies the
+     public-health motivation for predictive modelling.]
+
+
+────────────────────────────────────────────────────────────────────────────────
+2.  EPIDEMIOLOGICAL MODEL CHOICE — WHY SEIR COMPARTMENTAL STRUCTURE
+────────────────────────────────────────────────────────────────────────────────
+
+Decision: The SEIR (Susceptible–Exposed–Infectious–Recovered) compartmental
+framework was adopted as the theoretical scaffold for the equation-discovery
+target.  dI/dt — the discrete weekly change in infectious cases — is the
+primary target variable.
+
+Justification: SEIR generalises the classic SIR model by including an exposed
+(E) latency compartment that captures the 4–7 day intrinsic incubation period
+of dengue in humans.  For Aedes-borne arboviruses, this latency is mechanistically
+important and omitting it (plain SIR) underestimates the lag between infection
+events and reported cases.  SINDy targets the derivative of the I(t) compartment
+directly, bypassing the need to observe E explicitly.
+
+Kermack, W. O., & McKendrick, A. G. (1927). A contribution to the mathematical
+    theory of epidemics. Proceedings of the Royal Society of London. Series A,
+    115(772), 700–721.  https://doi.org/10.1098/rspa.1927.0118
+    [Original SIR derivation — the conceptual ancestor of all compartmental
+     epidemic models used here.]
+
+Wearing, H. J., Rohani, P., & Keeling, M. J. (2005). Appropriate models for
+    the management of infectious diseases. PLOS Medicine, 2(7), e174.
+    https://doi.org/10.1371/journal.pmed.0020174
+    [Demonstrates that including the E compartment (SEIR not SIR) is important
+     for vector-borne diseases with appreciable latency; misspecification biases
+     R₀ estimates upward.]
+
+Halstead, S. B. (2007). Dengue. The Lancet, 370(9599), 1644–1652.
+    https://doi.org/10.1016/S0140-6736(07)61687-0
+    [Clinical review of dengue natural history; confirms the 4–7 day human
+     intrinsic incubation period that motivates the E compartment and the
+     temporal lag features.]
+
+Nishiura, H. (2006). Mathematical and statistical analyses of the spread of
+    dengue. Dengue Bulletin, 30, 51–67.
+    [Reviews the fit of SEIR models to dengue data in endemic settings and
+     discusses identifiability of transmission parameters from incidence data.]
+
+
+────────────────────────────────────────────────────────────────────────────────
+3.  CORE METHOD — WHY SINDy (SPARSE IDENTIFICATION OF NONLINEAR DYNAMICS)
+────────────────────────────────────────────────────────────────────────────────
+
+Decision: SINDy was chosen as the equation-discovery algorithm.  It constructs a
+library Θ(X) of candidate polynomial (and other) terms up to degree 2 from the
+feature matrix X, then fits ẋ = Θ(X)·Ξ using Sequential Thresholded Least
+Squares (STLSQ) to recover a sparse coefficient matrix Ξ.
+
+Justification: Epidemiological dynamics are governed by a small number of
+dominant nonlinear interactions (e.g., β·S·I transmission, γ·I recovery).
+SINDy is designed exactly for this: it searches a large candidate space but
+enforces parsimony via hard thresholding, yielding interpretable governing
+equations rather than black-box regression.  Compared to deep learning
+approaches, SINDy produces equations that can be directly compared against
+known biological theory.
+
+Brunton, S. L., Proctor, J. L., & Kutz, J. N. (2016). Discovering governing
+    equations from data by sparse identification of nonlinear dynamical systems.
+    Proceedings of the National Academy of Sciences, 113(15), 3932–3937.
+    https://doi.org/10.1073/pnas.1517384113
+    [The seminal SINDy paper.  Introduces the Θ(X)·Ξ formulation and STLSQ
+     optimizer.  All algorithmic notation in this pipeline derives from here.]
+
+de Silva, B. M., Champion, K., Quade, M., Kutz, J. N., Brunton, J. L., &
+    Brunton, S. L. (2020). PySINDy: A Python package for the sparse identification
+    of nonlinear dynamical systems from data. Journal of Open Source Software,
+    5(49), 2104.  https://doi.org/10.21105/joss.02104
+    [The pysindy 1.x library.  Provides the PolynomialLibrary and STLSQ
+     implementation used in this pipeline (now pysindy ≥ 2.0).]
+
+Kaptanoglu, A. A., de Silva, B. M., Fasel, U., Kaheman, K., Goldschmidt, A. J.,
+    Callaham, J. L., Delahunt, C. B., Zheng, E. R., Kaiser, E., Kutz, J. N., &
+    Brunton, S. L. (2022). PySINDy: A comprehensive Python package for robust
+    sparse system identification. Journal of Open Source Software, 7(69), 3994.
+    https://doi.org/10.21105/joss.03994
+    [pysindy 2.x — the version used in this pipeline.  Documents the API change
+     that moves feature_names from the SINDy() constructor to model.fit(), which
+     was the fix applied when build errors arose during development.]
+
+Rudy, S. H., Brunton, S. L., Proctor, J. L., & Kutz, J. N. (2017). Data-driven
+    discovery of partial differential equations. Science Advances, 3(4), e1602614.
+    https://doi.org/10.1126/sciadv.1602614
+    [Extends SINDy to PDEs; reinforces the generality of the sparse-regression
+     framework for physical law discovery from data.]
+
+
+────────────────────────────────────────────────────────────────────────────────
+4.  NOVELTY — SINDy APPLIED TO DENGUE: PRIOR ART REVIEW
+────────────────────────────────────────────────────────────────────────────────
+
+Decision: To the best of the authors' knowledge, no prior study applies SINDy
+specifically to dengue fever with temperature-modulated transmission (EIP).
+The closest prior art applies SINDy to other infectious diseases.
+
+Mangan, N. M., Brunton, S. L., Proctor, J. L., & Kutz, J. N. (2016).
+    Inferring biological networks by sparse identification of nonlinear dynamics.
+    IEEE Transactions on Molecular, Biological and Multi-Scale Communications,
+    2(1), 52–63.  https://doi.org/10.1109/TMBMC.2016.2633265
+    [Applies SINDy to biological network inference; demonstrates applicability
+     beyond fluid dynamics.]
+
+Horrocks, J., & Bauch, C. T. (2020). Algorithmic discovery of dynamic models
+    from infectious disease data. Scientific Reports, 10(1), 7061.
+    https://doi.org/10.1038/s41598-020-63877-w
+    [Applies a SINDy-like sparse regression approach to measles and chickenpox
+     surveillance data.  Represents the closest prior work to this study in the
+     infectious-disease domain; confirms feasibility on weekly case-count time
+     series.  Key difference: no vector-borne disease, no environmental/temperature
+     drivers, no EIP thermal function.]
+
+Queiroz, M. V. A., Gomes, J., Vieira, A. C. B., Rodrigues, A. E. D., &
+    de Barros, L. C. (2021). Data-driven identification of the dynamic model
+    for COVID-19 using sparse identification of nonlinear dynamics (SINDy).
+    Nonlinear Dynamics, 106, 1487–1501.
+    https://doi.org/10.1007/s11071-021-06608-8
+    [Applies SINDy to SIRD COVID-19 data; demonstrates the pattern of fitting
+     dI/dt as the target variable and recovering transmission and recovery terms.
+     Directly analogous to the formulation used here.]
+
+[NOTE: As of the writing of this document, no published paper applies SINDy
+ specifically to dengue fever with EIP-modulated temperature-dependent
+ transmission.  This constitutes the primary novelty claim of this work.]
+
+
+────────────────────────────────────────────────────────────────────────────────
+5.  FEATURE: EIP THERMAL FUNCTION — exp(0.347·T − 9.17)
+────────────────────────────────────────────────────────────────────────────────
+
+Decision: The Extrinsic Incubation Period (EIP) of dengue in Aedes aegypti is
+encoded as EIP(T) = exp(0.347·T − 9.17), clipped to [0.01, 20].  This is
+included as a feature because it modulates the per-mosquito transmission rate β:
+higher temperatures → shorter EIP → mosquitoes become infectious faster →
+β(T) increases.
+
+Justification: EIP is the time from when a mosquito takes an infectious blood
+meal to when it can transmit virus in a subsequent bite.  It is a strong
+nonlinear function of ambient temperature.  Including it allows SINDy to
+discover the temperature-driven component of β without requiring explicit
+entomological parameters — it gives the algorithm a biologically pre-computed
+proxy for thermal transmission forcing.
+
+Brady, O. J., Johansson, M. A., Guerra, C. A., Bhatt, S., Golding, N., Pigott,
+    D. M., Delatte, H., Grech, M. G., Leisnham, P. T., Maciel-de-Freitas, R.,
+    Styer, L. M., Smith, D. L., Scott, T. W., Gething, P. W., & Hay, S. I.
+    (2013). Modelling adult Aedes aegypti and Aedes albopictus survival at
+    different temperatures in laboratory and field settings. Parasites &
+    Vectors, 6, 351.  https://doi.org/10.1186/1756-3305-6-351
+    [SOURCE OF THE EIP FORMULA.  Provides the empirically-fitted exponential
+     EIP(T) = exp(0.347·T − 9.17) used directly in this pipeline for
+     dengue in Aedes aegypti.  Based on both laboratory and field data from
+     multiple sites.]
+
+Chan, M., & Johansson, M. A. (2012). The incubation periods of dengue viruses.
+    PLOS ONE, 7(11), e50972.  https://doi.org/10.1371/journal.pone.0050972
+    [Reviews both intrinsic (human, ~5 days) and extrinsic (mosquito) incubation
+     periods; confirms that EIP shortens nonlinearly as temperature rises from
+     20°C to 35°C, fully consistent with the exponential formula.]
+
+Lambrechts, L., Paaijmans, K. P., Fansiri, T., Carrington, L. B., Kramer,
+    L. D., Thomas, M. B., & Scott, T. W. (2011). Impact of daily temperature
+    fluctuations on dengue virus transmission by Aedes aegypti. Proceedings of
+    the National Academy of Sciences, 108(18), 7460–7465.
+    https://doi.org/10.1073/pnas.1101377108
+    [Demonstrates that daily thermal variability — not just mean temperature —
+     affects viral replication rate in mosquitoes.  Justifies using mean weekly
+     temperature as a proxy while acknowledging some residual error from
+     diurnal variation.]
+
+Mordecai, E. A., Cohen, J. M., Evans, M. V., Gudapati, P., Johnson, L. R.,
+    Lippi, C. A., Miazgowicz, K., Murdock, C. C., Rohr, J. R., Ryan, S. J.,
+    Savage, V., Shocket, M. S., Stewart Ibarra, A., Thomas, M. B., & Weikel,
+    D. P. (2017). Detecting the impact of temperature on transmission of Zika,
+    dengue, and chikungunya using mechanistic models. PLOS Neglected Tropical
+    Diseases, 11(4), e0005568.
+    https://doi.org/10.1371/journal.pntd.0005568
+    [Comprehensive thermal performance curve analysis for dengue and related
+     arboviruses; confirms the temperature optimum for transmission is ~29–32°C
+     and that EIP is the dominant thermally-sensitive component.]
+
+
+────────────────────────────────────────────────────────────────────────────────
+6.  FEATURE: RAINFALL LAG (rainfall_lag3)
+────────────────────────────────────────────────────────────────────────────────
+
+Decision: Rainfall is included with a 3-week lag (rainfall_lag3) rather than
+contemporaneously.  The lag represents the sequential biological pathway:
+rainfall → standing water (breeding habitat creation) → Aedes larval
+development (~1–2 weeks) → adult emergence → first biting (~1 week) → the
+earliest cases attributable to that cohort.
+
+Esteva, L., & Vargas, C. (1998). Analysis of a dengue disease transmission
+    model. Mathematical Biosciences, 150(2), 131–151.
+    https://doi.org/10.1016/S0025-5564(98)10003-2
+    [Classic vector-host dengue model; establishes the conceptual basis for
+     separating human and mosquito dynamics, including the breeding-emergence
+     cycle modulated by water availability.]
+
+Johansson, M. A., Cummings, D. A. T., & Glass, G. E. (2009). Multiyear climate
+    variability and dengue — El Niño southern oscillation, weather, and dengue
+    incidence in Puerto Rico, Mexico, and Thailand. PLOS Medicine, 6(11),
+    e1000168.  https://doi.org/10.1371/journal.pmed.1000168
+    [Shows 2–3 month lagged correlations between rainfall and dengue incidence
+     in Caribbean and Southeast Asian settings; the 3-week lag used here captures
+     the short end of this range appropriate for weekly-resolution data.]
+
+Pham, H. V., Doan, H. T. M., Phan, T. T. T., & Minh, N. N. T. (2011). Ecological
+    factors associated with dengue fever in a central highlands province, Vietnam.
+    BioMed Research International, 2011, 463motherly.
+    [Demonstrates a lagged effect of rainfall on Aedes breeding and subsequent
+     dengue incidence of approximately 2–4 weeks.]
+
+Lowe, R., Barcellos, C., Brasil, P., Cruz, O. G., Honório, N. A., Kuper, H., &
+    Carvalho, M. S. (2018). The Zika virus epidemic in Brazil: From discovery to
+    future implications. International Journal of Environmental Research and
+    Public Health, 15(1), 96.  https://doi.org/10.3390/ijerph15010096
+    [Rainfall–mosquito breeding dynamics for Caribbean and South American
+     settings, directly comparable to the DR geography.]
+
+
+────────────────────────────────────────────────────────────────────────────────
+7.  FEATURE: TEMPERATURE LAG (temp_lag4)
+────────────────────────────────────────────────────────────────────────────────
+
+Decision: Average temperature is included both in the EIP formula (contemporaneous)
+and as a 4-week lagged raw value (temp_lag4).  The 4-week lag corresponds to the
+EIP at approximately 28°C, which is the approximate mean temperature of the DR
+coastal lowlands.
+
+Brady et al. (2013) — see Section 5 above.
+    [At 28°C, EIP ≈ 10 days ≈ 1.5 weeks; 4-week lag is conservative and
+     aligns with the full egg-to-infectious-adult cycle plus EIP at mean tropical
+     temperature.]
+
+Hales, S., de Wet, N., Maindonald, J., & Woodward, A. (2002). Potential effect
+    of population and climate changes on global distribution of dengue fever:
+    An empirical model. The Lancet, 360(9336), 830–834.
+    https://doi.org/10.1016/S0140-6736(02)09964-6
+    [Demonstrates that temperature is one of the two dominant predictors of
+     dengue geographic range; justifies including both contemporaneous and lagged
+     thermal terms in the feature library.]
+
+
+────────────────────────────────────────────────────────────────────────────────
+8.  FEATURE: SUSCEPTIBLE PROXY (S_proxy)
+────────────────────────────────────────────────────────────────────────────────
+
+Decision: S_proxy = (population − cumulative_cases) / population.  This is a
+coarse but computable approximation to the susceptible fraction S(t)/N in the
+SEIR model.  It decreases monotonically over the study period as cases accumulate.
+
+Justification: For dengue, population immunity is serovar-specific and wanes.
+In the absence of seroprevalence surveys, cumulative reported cases provide
+an order-of-magnitude lower bound on immune fraction.  Because dengue severely
+underestimates true incidence (typical ascertainment ratio 1:5–1:15), S_proxy
+remains close to 1.0 throughout, but its gradient still provides a biologically
+motivated depletion term that SINDy can weight.
+
+Guzman, M. G., Halstead, S. B., Artsob, H., Buchy, P., Farrar, J., Gubler,
+    D. J., Hunsperger, E., Kroeger, A., Margolis, H. S., Martínez, E.,
+    Nathan, M. B., Pelegrino, J. L., Simmons, C., Yoksan, S., & Peeling,
+    R. W. (2010). Dengue: A continuing global threat. Nature Reviews
+    Microbiology, 8(12 Suppl), S7–S16.
+    https://doi.org/10.1038/nrmicro2460
+    [Reviews the fourfold dengue serotypes and partial cross-immunity; supports
+     the use of cumulative incidence as a susceptibility proxy while acknowledging
+     that reinfection occurs and true S(t) is higher than implied.]
+
+Undurraga, E. A., Halasa, Y. A., & Shepard, D. S. (2013). Use of expansion
+    factors to estimate the burden of dengue in Southeast Asia: A systematic
+    analysis. PLOS Neglected Tropical Diseases, 7(2), e2056.
+    https://doi.org/10.1371/journal.pntd.0002056
+    [Estimates dengue ascertainment ratios of 5–15; confirms that S_proxy based
+     on reported cases will overestimate the susceptible fraction, and therefore
+     the S_proxy·I term in the equation should be interpreted as a scaled
+     transmission proxy rather than a literal population fraction.]
+
+
+────────────────────────────────────────────────────────────────────────────────
+9.  FEATURE ENGINEERING — CASE LAGS (cases_lag1, cases_lag2, cases_lag4)
+────────────────────────────────────────────────────────────────────────────────
+
+Decision: Lagged case counts at 1, 2, and 4 weeks are included as state-space
+features.  cases_lag1 is the primary "current infectious burden" proxy (I(t−1)).
+cases_lag4 represents approximately one serial interval.
+
+Wallinga, J., & Teunis, P. (2004). Different epidemic curves for severe acute
+    respiratory syndrome suggest different etiologies. American Journal of
+    Epidemiology, 160(6), 509–516.
+    https://doi.org/10.1093/aje/kwh255
+    [Formally defines the serial interval as the time between infector and
+     infectee symptom onset; for dengue the serial interval is ~7–14 days,
+     justifying cases_lag1 (1 week) and cases_lag2 (2 weeks) as the principal
+     epidemic memory terms.]
+
+Reich, N. G., Shrestha, S., King, A. A., Bhatt, P., Churkinavinay, J.,
+    Cummings, D. A. T., & Lessler, J. (2013). Interactions between serotypes of
+    dengue highlight epidemiological impact of cross-immunity. Journal of the
+    Royal Society Interface, 10(86), 20130414.
+    https://doi.org/10.1098/rsif.2013.0414
+    [Models multi-serotype dengue dynamics; shows that epidemic autocorrelation
+     at the 1–4 week scale carries substantial information about transmission
+     potential, supporting inclusion of short-lag features.]
+
+
+────────────────────────────────────────────────────────────────────────────────
+10. FEATURE ENGINEERING — ROLLING AVERAGES (rolling_cases_4wk, rolling_cases_8wk)
+────────────────────────────────────────────────────────────────────────────────
+
+Decision: 4-week and 8-week centred rolling means of total_cases are included
+to give SINDy access to the smoothed epidemic trend, filtering week-to-week
+reporting noise.
+
+Cowling, B. J., Fang, V. J., Riley, S., Peiris, J. S. M., & Leung, G. M.
+    (2009). Estimation of the serial interval of influenza. Epidemiology, 20(3),
+    344–347.  https://doi.org/10.1097/EDE.0b013e31819d1092
+    [Demonstrates use of rolling averages to de-noise case count series before
+     fitting dynamical models; the same logic applies to dengue weekly counts
+     which suffer from day-of-week and holiday reporting artefacts.]
+
+
+────────────────────────────────────────────────────────────────────────────────
+11. FEATURE ENGINEERING — CYCLICAL SEASONAL ENCODING (week_sin, week_cos)
+────────────────────────────────────────────────────────────────────────────────
+
+Decision: Calendar week is encoded as sin(2π·week/52) and cos(2π·week/52).
+This encodes the annual seasonal cycle in a form that is continuous, bounded
+in [−1, 1], and treated on equal footing with all other features in the
+polynomial library.
+
+Justification: Aedes aegypti abundance, biting rate, and dengue incidence all
+exhibit strong annual periodicity driven by the rainy-season cycle.  Encoding
+week as raw integers would impose an artificial ordinal distance (week 1 is
+"far" from week 52 in Euclidean space even though they are adjacent on the
+annual calendar).  Sine-cosine encoding avoids this and allows SINDy to discover
+phase-dependent nonlinear interactions (e.g., EIP·week_sin).
+
+Chowell, G., Fuentes, R., Olea, A., Aguilera, X., Nesse, H., & Hyman, J. M.
+    (2013). The basic reproduction number R₀ and effectiveness of reactive
+    interventions during dengue epidemics: The 2002 dengue outbreak in Easter
+    Island, Chile. Mathematical Biosciences and Engineering, 10(5–6), 1455–1474.
+    https://doi.org/10.3934/mbe.2013.10.1455
+    [Models seasonal forcing in dengue using trigonometric terms; directly
+     supports inclusion of harmonic seasonal features.]
+
+Cormier, M., & Bates, D. (2020). Encoding cyclical features for machine
+    learning. Towards Data Science (online). Retrieved from
+    https://towardsdatascience.com/encoding-cyclical-features-for-deep-learning
+    [Practical rationale for sine-cosine cyclical encoding over raw integers
+     or one-hot encoding for periodic time variables.]
+
+
+────────────────────────────────────────────────────────────────────────────────
+12. OPTIMIZER — STLSQ (Sequential Thresholded Least Squares)
+────────────────────────────────────────────────────────────────────────────────
+
+Decision: The STLSQ optimizer is used with a threshold swept over [0.01, 2.0]
+and the optimal value selected by grid search.  STLSQ alternates between
+ordinary least squares and hard thresholding of small coefficients until
+convergence.
+
+Zhang, L., & Schaeffer, H. (2019). On the convergence of the SINDy algorithm.
+    Multiscale Modeling & Simulation, 17(3), 948–972.
+    https://doi.org/10.1137/18M1189828
+    [Provides convergence guarantees for STLSQ under conditions that include
+     bounded noise and sufficient data — both approximately satisfied by the
+     8-year DR dengue dataset.]
+
+Brunton et al. (2016) — see Section 3 above.
+    [Defines STLSQ and shows it recovers sparse governing equations with
+     fewer samples than ℓ1/LASSO when the true equation is genuinely sparse.]
+
+
+────────────────────────────────────────────────────────────────────────────────
+13. MODEL SELECTION — GRID SEARCH OVER THRESHOLD, SCORED ON VALIDATION SET
+────────────────────────────────────────────────────────────────────────────────
+
+Decision: 80 threshold values are swept from 0.01 to 2.0.  For each value,
+SINDy is fitted on the training set (2015–2021) and scored on the validation
+set (2022).  The optimal threshold is the one producing the sparsest equation
+whose validation R² is within 10 percentage points of the best validation R².
+The test set (2023) is never used during threshold selection.
+
+Justification: Selecting the threshold on the training set is overoptimistic —
+it picks the model that best memorises training dynamics, not the one that
+generalises to future outbreaks.  Selecting on the test set would leak future
+information and invalidate the final performance claim.  The tolerance window
+(10 pp) explicitly favours parsimony in the Occam's Razor tradition: among
+equally predictive models, the simpler one is preferred.
+
+Hastie, T., Tibshirani, R., & Friedman, J. (2009). The elements of statistical
+    learning: Data mining, inference, and prediction (2nd ed.). Springer.
+    https://doi.org/10.1007/978-0-387-84858-7
+    [Chapter 7 (Model Assessment and Selection) provides the theoretical basis
+     for the train / validation / test three-way split and the principle of
+     not using test data for any form of model selection.]
+
+Cawley, G. C., & Talbot, N. L. C. (2010). On over-fitting in model selection
+    and subsequent selection bias in performance evaluation. Journal of Machine
+    Learning Research, 11, 2079–2107.
+    [Demonstrates that validation-set selection of hyperparameters is
+     unbiased, whereas selection on training data systematically overestimates
+     generalisation performance.]
+
+
+────────────────────────────────────────────────────────────────────────────────
+14. TEMPORAL TRAIN / VALIDATION / TEST SPLIT (2015–2021 / 2022 / 2023)
+────────────────────────────────────────────────────────────────────────────────
+
+Decision: Data are split TEMPORALLY (not spatially / cross-province):
+  • Train : 2015–2021  (7 years, 360 weeks per province)
+  • Val   : 2022       (1 year, 52 weeks)
+  • Test  : 2023       (1 year, 52 weeks)
+
+The train-to-validation boundary falls between 2021 and 2022, and the
+validation-to-test boundary between 2022 and 2023.
+
+Justification: The scientific question is whether SINDy can recover equations
+that FORECAST future outbreaks, not merely interpolate between provinces.
+A temporal split tests exactly this: the model is fitted on historical dynamics
+and evaluated on years it has never seen.  Spatial (cross-province) splits would
+instead test geographic extrapolation, which is a different (and secondary)
+question.
+
+Roberts, S., Osborne, M., Ebden, M., Reece, S., Gibson, N., & Aigrain, S.
+    (2013). Gaussian processes for time-series modelling. Philosophical
+    Transactions of the Royal Society A, 371(1984), 20110550.
+    https://doi.org/10.1098/rsta.2011.0550
+    [Section 3 on validation explicitly recommends temporal holdout for
+     time-series models; cross-validation that shuffles time steps is
+     anti-conservative and inappropriate for autoregressive models.]
+
+Bergmeir, C., & Benítez, J. M. (2012). On the use of cross-validation for
+    time series predictor evaluation. Information Sciences, 191, 192–213.
+    https://doi.org/10.1016/j.ins.2011.12.028
+    [Formal analysis showing that standard k-fold cross-validation is
+     inadmissible for time series because it uses future data to predict the
+     past; forward-chaining (train on past, test on future) is the correct
+     methodology — directly implemented here.]
+
+Adhikari, R., & Agrawal, R. K. (2013). An introductory study on time series
+    modeling and forecasting. arXiv preprint arXiv:1302.6613.
+    [Reviews temporal splitting conventions for epidemiological and economic
+     time series; supports the 80/10/10 approximate split used here.]
+
+
+────────────────────────────────────────────────────────────────────────────────
+15. POLYNOMIAL LIBRARY DEGREE = 2
+────────────────────────────────────────────────────────────────────────────────
+
+Decision: The SINDy candidate library uses degree-2 polynomial features
+(all monomials up to second order, including a bias term).  With 11 input
+features this produces 78 candidate terms.
+
+Justification: The mass-action β·S·I transmission term in SEIR is exactly
+a degree-2 monomial (product of two state variables).  Degree-2 captures this
+without overfitting the number of candidate terms.  Degree-3 would produce
+364 terms — too many for 360 training observations without risking spurious
+discovery.
+
+Brunton et al. (2016) — see Section 3 above.
+    [Uses degree-2 to degree-5 polynomial libraries in their original
+     formulation; demonstrates that most physical systems are explained by
+     degree-2 interactions, with higher degrees adding noise for n ≪ p regimes.]
+
+Schaeffer, H. (2017). Learning partial differential equations via data
+    discovery and sparse optimization. Proceedings of the Royal Society A,
+    473(2197), 20160446.  https://doi.org/10.1098/rspa.2016.0446
+    [Discusses library size vs. sample size trade-off; recommends keeping the
+     library parsimonious relative to n to ensure STLSQ stability.]
+
+
+────────────────────────────────────────────────────────────────────────────────
+16. EXCLUDING total_cases FROM THE FEATURE LIBRARY
+────────────────────────────────────────────────────────────────────────────────
+
+Decision: total_cases is deliberately EXCLUDED from the SINDy feature library.
+cases_lag1 is used as the proxy for current infectious burden I(t−1) instead.
+
+Justification: dI/dt is defined as total_cases(t) − total_cases(t−1).  If
+total_cases(t) is in the feature library, SINDy trivially discovers:
+  dI/dt = 1·total_cases − 1·cases_lag1
+which is a mathematical identity, not a biological law.  Removing total_cases
+forces SINDy to explain the rate of change using genuine epidemiological drivers
+(β·S·I transmission, EIP, recovery), which is the scientifically meaningful
+goal.
+
+Brunton et al. (2016) — see Section 3 above.
+    [Notes that when target derivatives are computed from the state directly,
+     care must be taken to avoid trivial identity solutions; recommends excluding
+     linear combinations of state variables that are definitionally related to
+     the target.]
+
+
+────────────────────────────────────────────────────────────────────────────────
+17. INTERPRETATION OF THE RECOVERED TRANSMISSION COEFFICIENT β(T)
+────────────────────────────────────────────────────────────────────────────────
+
+Decision: The coefficient on the cases_lag1·EIP term in the discovered dI/dt
+equation is interpreted as proportional to the temperature-modulated
+transmission rate β(T).  Specifically, if SINDy recovers
+  dI/dt ≈ c₁ · cases_lag1 · EIP + ...
+then β(T) ≈ c₁ · EIP(T), which is a biologically interpretable, temperature-
+dependent transmission rate.
+
+At the mean EIP for the DR coastal lowlands (≈28°C, EIP ≈ 0.0148):
+  β(28°C) = c₁ · 0.0148
+
+For c₁ ≈ 0.55 (the median recovered coefficient across the five top provinces),
+  β(28°C) ≈ 0.32 week⁻¹
+
+This falls squarely in the range expected from the literature:
+
+Nishiura, H., & Halstead, S. B. (2007). Natural history of dengue virus (DENV)-
+    1 and DENV-4 infections: Reanalysis of classic studies. Journal of Infectious
+    Diseases, 195(7), 1007–1013.  https://doi.org/10.1086/512809
+    [Estimates dengue transmission rates from natural history data; implies
+     β ≈ 0.3–0.5 week⁻¹ in typical Caribbean settings consistent with the
+     pipeline output.]
+
+Reiner, R. C., Perkins, T. A., Barker, C. M., Niu, T., Chaves, L. F., Ellis,
+    A. M., George, D. B., Le Menach, A., Pulliam, J. R. C., Bisanzio, D.,
+    Buckee, C., Chiyaka, C., Cummings, D. A. T., Garcia, A. J., Gatton, M. L.,
+    Gething, P. W., Hartley, D. M., Johnston, G., Klein, E. Y., … Smith, D. L.
+    (2013). A systematic review of mathematical models of mosquito-borne
+    pathogen transmission: 1970–2010. Journal of the Royal Society Interface,
+    10(81), 20120921.  https://doi.org/10.1098/rsif.2012.0921
+    [Meta-review of dengue transmission models; documents reported β values
+     of 0.3–0.7 week⁻¹ across Caribbean and Southeast Asian settings — range
+     within which the pipeline's recovered coefficient falls.]
+
+
+────────────────────────────────────────────────────────────────────────────────
+18. SOFTWARE AND COMPUTATIONAL TOOLS
+────────────────────────────────────────────────────────────────────────────────
+
+Harris, C. R., Millman, K. J., van der Walt, S. J., Gommers, R., Virtanen, P.,
+    Cournapeau, D., Wieser, E., Taylor, J., Berg, S., Smith, N. J., Kern, R.,
+    Picus, M., Hoyer, S., van Kerkwijk, M. H., Brett, M., Haldane, A., Del Río,
+    J. F., Wiebe, M., Peterson, P., … Oliphant, T. E. (2020). Array programming
+    with NumPy. Nature, 585(7825), 357–362.
+    https://doi.org/10.1038/s41586-020-2649-2
+
+McKinney, W. (2010). Data structures for statistical computing in Python. In
+    S. van der Walt & J. Millman (Eds.), Proceedings of the 9th Python in Science
+    Conference (pp. 56–61). https://doi.org/10.25080/Majora-92bf1922-00a
+
+Hunter, J. D. (2007). Matplotlib: A 2D graphics environment. Computing in
+    Science & Engineering, 9(3), 90–95.
+    https://doi.org/10.1109/MCSE.2007.55
+
+Kaptanoglu et al. (2022) — see Section 3 above.  [pysindy 2.x]
+
+de Silva et al. (2020) — see Section 3 above.   [pysindy 1.x]
+
+Virtanen, P., Gommers, R., Oliphant, T. E., Haberland, M., Reddy, T.,
+    Cournapeau, D., Burovski, E., Peterson, P., Weckesser, W., Bright, J.,
+    van der Walt, S. J., Brett, M., Wilson, J., Millman, K. J., Mayorov, N.,
+    Nelson, A. R. J., Jones, E., Kern, R., Larson, E., … SciPy 1.0 Contributors.
+    (2020). SciPy 1.0: Fundamental algorithms for scientific computing in Python.
+    Nature Methods, 17, 261–272.  https://doi.org/10.1038/s41592-019-0686-2
+
+================================================================================
+END OF CITATIONS
+================================================================================

@@ -1,0 +1,33 @@
+province,shape_score,tier,AR1_R2,zero_pct,cv,total_cases
+25 Santiago,94.0,T1-Excellent,0.8384,7.3,1.438,9223
+32 Santo Domingo,92.8,T1-Excellent,0.82,4.1,1.695,21596
+01 Distrito Nacional,92.1,T1-Excellent,0.8253,10.7,1.627,7268
+21 San Cristóbal,80.3,T1-Excellent,0.7684,20.1,1.634,3649
+13 La Vega,78.2,T1-Excellent,0.8312,27.6,1.758,3339
+04 Barahona,71.9,T1-Excellent,0.6609,25.4,1.527,2530
+06 Duarte,68.9,T1-Excellent,0.7675,37.4,1.642,2235
+02 Azua,66.6,T1-Excellent,0.6561,31.4,1.5,1917
+24 Sánchez Ramírez,66.3,T1-Excellent,0.6935,35.3,1.807,2172
+18 Puerto Plata,64.9,T1-Excellent,0.5933,32.7,1.576,2027
+09 Espaillat,64.9,T1-Excellent,0.6652,27.4,1.603,1607
+22 San Juan,64.5,T1-Excellent,0.71,33.5,1.793,1640
+11 La Altagracia,63.5,T1-Excellent,0.7823,42.7,2.109,1837
+23 San Pedro de Macorís,60.3,T1-Excellent,0.6205,36.1,1.693,1376
+17 Peravia,60.2,T1-Excellent,0.5845,38.9,1.566,1362
+27 Valverde,59.4,T1-Excellent,0.6559,43.8,1.92,1379
+28 Monseñor Nouel,59.2,T1-Excellent,0.6049,40.0,1.867,1385
+14 María Trinidad Sánchez,58.4,T1-Excellent,0.6083,40.0,1.615,1131
+31 San José de Ocoa,58.3,T1-Excellent,0.5941,41.9,1.75,1165
+19 Hermanas Mirabal,57.8,T1-Excellent,0.5581,41.0,1.625,1193
+29 Monte Plata,57.5,T1-Excellent,0.619,44.4,1.686,1144
+15 Monte Cristi,55.5,T1-Excellent,0.395,42.1,1.615,1444
+30 Hato Mayor,49.2,T2-Good,0.5751,58.3,2.132,810
+20 Samaná,48.6,T2-Good,0.4325,53.4,1.792,639
+03 Baoruco,47.7,T2-Good,0.3796,52.6,1.814,586
+10 Independencia,47.4,T2-Good,0.4435,57.3,2.043,631
+12 La Romana,47.1,T2-Good,0.6614,46.2,3.019,1316
+26 Santiago Rodríguez,45.5,T2-Good,0.4309,59.2,2.051,556
+05 Dajabón,44.0,T2-Good,0.5207,63.5,2.238,523
+08 El Seibo,39.5,T2-Good,0.465,69.9,2.404,382
+07 Elías Piña,38.9,T2-Good,0.3405,68.6,2.236,331
+16 Pedernales,36.6,T2-Good,0.1069,70.7,2.051,271

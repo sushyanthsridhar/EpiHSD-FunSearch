@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SINDy + LLM-FunSearch Roadmap — DR Dengue Project</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #f8f9fa;
+    font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    padding: 32px 24px;
+    color: #222;
+    max-width: 780px;
+    margin: 0 auto;
+  }
+
+  h1 { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+  .subtitle { font-size: 13px; color: #666; margin-bottom: 20px; }
+
+  .board { display: flex; flex-direction: column; gap: 12px; }
+
+  .phase-row { display: flex; align-items: stretch; gap: 8px; }
+
+  .tile {
+    flex: 1;
+    border-radius: 10px;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    position: relative;
+    border: 2px solid transparent;
+    user-select: none;
+  }
+  .tile:hover { transform: translateY(-2px); box-shadow: 0 4px 14px rgba(0,0,0,0.13); }
+
+  .tile.done   { background: #e8f5e9; border-color: #4caf50; }
+  .tile.active { background: #fff3e0; border-color: #ff9800; animation: pulse 2s infinite; }
+  .tile.upcoming { background: #f5f5f5; border-color: #ddd; }
+  .tile.future   { background: #fafafa; border-color: #eee; opacity: 0.65; }
+
+  .tile.done   .tile-num { background: #4caf50; color: #fff; }
+  .tile.active .tile-num { background: #ff9800; color: #fff; }
+  .tile.upcoming .tile-num { background: #e0e0e0; color: #888; }
+  .tile.future   .tile-num { background: #eee;    color: #bbb; }
+
+  .tile.done   .tile-title { color: #2e7d32; }
+  .tile.active .tile-title { color: #e65100; }
+  .tile.upcoming .tile-title { color: #999; }
+  .tile.future   .tile-title { color: #bbb; }
+
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255,152,0,0.3); }
+    50%       { box-shadow: 0 0 0 7px rgba(255,152,0,0); }
+  }
+
+  .tile-header { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+  .tile-num {
+    width: 24px; height: 24px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; flex-shrink: 0;
+  }
+  .tile-title  { font-size: 13px; font-weight: 700; line-height: 1.3; }
+  .tile-sub    { font-size: 11px; color: #999; margin-top: 2px; line-height: 1.4; }
+
+  .badge-done   { position: absolute; top: 8px; right: 10px; font-size: 16px; }
+  .badge-active {
+    position: absolute; top: 9px; right: 10px;
+    font-size: 10px; font-weight: 700; background: #ff9800; color: #fff;
+    border-radius: 4px; padding: 2px 5px;
+    animation: blink 1.5s infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.35} }
+
+  .progress-bar-wrap { height: 4px; background: #e0e0e0; border-radius: 2px; margin-top: 7px; overflow: hidden; }
+  .progress-bar { height: 100%; border-radius: 2px; background: #4caf50; }
+  .progress-bar.orange { background: #ff9800; }
+
+  .arrow { text-align: center; font-size: 18px; color: #bbb; line-height: 1; margin: -4px 0; }
+
+  .detail-panel {
+    background: #fff;
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 12px;
+    color: #444;
+    line-height: 1.7;
+    border-left: 3px solid #ff9800;
+    display: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    margin-top: -4px;
+  }
+  .detail-panel.visible { display: block; }
+  .detail-panel h3 { font-size: 12px; font-weight: 700; margin-bottom: 8px; color: #333; }
+  .detail-panel ul  { padding-left: 18px; }
+  .detail-panel li  { margin-bottom: 3px; }
+
+  .sub-row { display: flex; gap: 8px; flex: 1; }
+
+  .legend {
+    display: flex; gap: 16px; margin-bottom: 16px; flex-wrap: wrap;
+  }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #666; }
+  .legend-dot  { width: 10px; height: 10px; border-radius: 50%; }
+
+  .overall-progress {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 18px; font-size: 12px; color: #666;
+  }
+  .overall-bar-wrap { flex: 1; height: 6px; background: #e0e0e0; border-radius: 3px; overflow: hidden; }
+  .overall-bar { height: 100%; background: linear-gradient(90deg,#4caf50 0%,#ff9800 100%); border-radius: 3px; }
+
+  footer { margin-top: 28px; font-size: 11px; color: #bbb; text-align: center; }
+  footer a { color: #bbb; }
+</style>
+</head>
+<body>
+
+<h1>🦟 DR Dengue — SINDy + LLM-FunSearch Roadmap</h1>
+<p class="subtitle">Click any stage to see details. Stages update as you progress.</p>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#4caf50"></div> Complete</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#ff9800"></div> Active</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#9e9e9e"></div> Upcoming</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#e0e0e0"></div> Future</div>
+</div>
+
+<div class="overall-progress">
+  <span>Progress</span>
+  <div class="overall-bar-wrap"><div class="overall-bar" style="width:82%"></div></div>
+  <span id="pct-label">82%</span>
+</div>
+
+<div class="board">
+
+  <!-- Stage 1 -->
+  <div class="phase-row">
+    <div class="tile done" onclick="toggle(1)">
+      <div class="tile-header"><div class="tile-num">1</div><div class="tile-title">Data Collection</div></div>
+      <div class="tile-sub">32 DR provinces · 2015–2023 · weekly</div>
+      <div class="progress-bar-wrap"><div class="progress-bar" style="width:100%"></div></div>
+      <div class="badge-done">✅</div>
+    </div>
+  </div>
+  <div class="detail-panel" id="detail-1">
+    <h3>Stage 1 — Data Collection</h3>
+    <ul>
+      <li>Dengue case counts per province/week (DIGEPI)</li>
+      <li>Temperature (avg/max/min) — Open-Meteo ERA5</li>
+      <li>Rainfall (avg/max/min) — precipitation_sum</li>
+      <li>Humidity (avg/max/min) — hourly RH aggregated to weekly</li>
+      <li>Population 2015–2023 (census + linear extrapolation)</li>
+    </ul>
+  </div>
+  <div class="arrow">↓</div>
+
+  <!-- Stage 2 -->
+  <div class="phase-row">
+    <div class="tile done" onclick="toggle(2)">
+      <div class="tile-header"><div class="tile-num">2</div><div class="tile-title">Preprocessing & Validation</div></div>
+      <div class="tile-sub">input.csv · 14,976 × 15 · zero NaNs</div>
+      <div class="progress-bar-wrap"><div class="progress-bar" style="width:100%"></div></div>
+      <div class="badge-done">✅</div>
+    </div>
+  </div>
+  <div class="detail-panel" id="detail-2">
+    <h3>Stage 2 — Preprocessing & Validation</h3>
+    <ul>
+      <li>ISO week alignment across all data sources</li>
+      <li>Zero-fill missing weeks per province</li>
+      <li>Geographic & physical plausibility checks (8 checks × 3 weather datasets)</li>
+      <li>build_input.py assembles all sources → data_processing/input.csv</li>
+      <li>32 provinces × 9 years × 52 weeks = 14,976 rows</li>
+    </ul>
+  </div>
+  <div class="arrow">↓</div>
+
+  <!-- Stage 3 + 4 (parallel) -->
+  <div class="phase-row">
+    <div class="sub-row">
+      <div class="tile done" onclick="toggle(3)" style="flex:1.2">
+        <div class="tile-header"><div class="tile-num">3</div><div class="tile-title">SEIR Feature Engineering</div></div>
+        <div class="tile-sub">S_proxy · dI/dt · lags · EIP · cyclical</div>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="width:100%"></div></div>
+        <div class="badge-done">✅</div>
+      </div>
+      <div class="tile done" onclick="toggle(4)">
+        <div class="tile-header"><div class="tile-num">4</div><div class="tile-title">Candidate Library</div></div>
+        <div class="tile-sub">78 terms · degree-2 polynomial</div>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="width:100%"></div></div>
+        <div class="badge-done">✅</div>
+      </div>
+    </div>
+  </div>
+  <div class="detail-panel" id="detail-3">
+    <h3>Stage 3 — SEIR Feature Engineering (build_seir_features.py)</h3>
+    <ul>
+      <li><b>S_proxy</b> = (population − cumulative_cases) / population</li>
+      <li><b>dI_dt</b> = weekly Δcases (first difference)</li>
+      <li><b>Lags</b>: cases_lag1, lag2, lag4 · temp_lag4 · rainfall_lag3</li>
+      <li><b>EIP(T)</b> = exp(0.347·T − 9.17) — thermal forcing on β</li>
+      <li><b>Cyclical</b>: sin(2π·week/52), cos(2π·week/52)</li>
+      <li><b>Rolling</b>: 4-week &amp; 8-week rolling case averages</li>
+      <li>Output: sindy/seir_features.csv (14,848 rows × 28 cols)</li>
+    </ul>
+  </div>
+  <div class="detail-panel" id="detail-4">
+    <h3>Stage 4 — Candidate Function Library</h3>
+    <ul>
+      <li>Polynomial terms up to degree 2 of state variables</li>
+      <li>Key terms: S_proxy·cases_lag1 (transmission), cases_lag1 (recovery), EIP·cases_lag1</li>
+      <li>Seasonal: week_sin, week_cos interactions</li>
+      <li>Environmental cross-terms: rainfall·EIP, humidity·cases</li>
+      <li>91 candidate terms from degree-2 polynomial of 12 features</li>
+    </ul>
+  </div>
+  <div class="arrow">↓</div>
+
+  <!-- Stage 5 -->
+  <div class="phase-row">
+    <div class="tile done" onclick="toggle(5)">
+      <div class="tile-header"><div class="tile-num">5</div><div class="tile-title">Preliminary SINDy Run</div></div>
+      <div class="tile-sub">run_sindy.py · STLSQ · top 5 provinces</div>
+      <div class="progress-bar-wrap"><div class="progress-bar" style="width:100%"></div></div>
+      <div class="badge-done">✅</div>
+    </div>
+  </div>
+  <div class="detail-panel" id="detail-5">
+    <h3>Stage 5 — Preliminary SINDy Run (run_sindy.py)</h3>
+    <ul>
+      <li>Select top 5 provinces: Santo Domingo, Santiago, Distrito Nacional, San Cristóbal, La Vega</li>
+      <li>Fit SINDy with STLSQ optimizer — threshold sweep [0.01, 0.05, 0.1, 0.2, 0.3, 0.5]</li>
+      <li>Discover sparse equation: dI/dt = f(S_proxy, I, EIP, rainfall, humidity, lags, season)</li>
+      <li>Score: R², sparsity, physical plausibility of coefficient signs</li>
+      <li>Plots: actual vs predicted I(t), threshold sweep curve, residuals</li>
+    </ul>
+  </div>
+  <div class="arrow">↓</div>
+
+  <!-- Stage 6 -->
+  <div class="phase-row">
+    <div class="tile done" onclick="toggle(6)">
+      <div class="tile-header"><div class="tile-num">6</div><div class="tile-title">Equation Analysis</div></div>
+      <div class="tile-sub">13/32 provinces EIP-driven · universal AR backbone found</div>
+      <div class="progress-bar-wrap"><div class="progress-bar" style="width:100%"></div></div>
+      <div class="badge-done">✅</div>
+    </div>
+  </div>
+  <div class="detail-panel" id="detail-6">
+    <h3>Stage 6 — Equation Analysis ✅</h3>
+    <ul>
+      <li>✅ Universal AR backbone discovered: dI/dt ≈ −1.3·I(t−1) − 0.7·I(t−2) + 2.0·rolling_4wk — holds across all 32 provinces</li>
+      <li>✅ EIP (temperature-driven transmission) survived in 13/32 provinces — all coastal/tropical; inland provinces are pure AR as expected geographically</li>
+      <li>✅ S_proxy removed — biologically invalid for dengue (serotype reinfection + near-constant due to underreporting)</li>
+      <li>✅ Population normalisation (incidence per 100k) made cross-province coefficients comparable and unlocked EIP signal</li>
+      <li>✅ Two validation methods: M1 per-province temporal split (mean test R²=0.39, 30/32 positive), M2 all-pooled temporal (test R²=0.43)</li>
+      <li>✅ Shape-weighted R² computed — provinces with sharper epidemic peaks weighted more in summary score</li>
+      <li>✅ No prior SINDy paper on dengue — confirmed novel contribution</li>
+    </ul>
+  </div>
+  <div class="arrow">↓</div>
+
+  <!-- Stage 7 -->
+  <div class="phase-row">
+    <div class="tile future" onclick="toggle(7)">
+      <div class="tile-header"><div class="tile-num">7</div><div class="tile-title">LLM-FunSearch Integration</div></div>
+      <div class="tile-sub">→ Elevated to standalone Project 3</div>
+      <div class="progress-bar-wrap"><div class="progress-bar" style="width:0%"></div></div>
+    </div>
+  </div>
+  <div class="detail-panel" id="detail-7">
+    <h3>Stage 7 — LLM-FunSearch Integration</h3>
+    <ul>
+      <li>This stage has been elevated to a standalone project: LLM-FunSearch-SINDy (Project 3)</li>
+      <li>Project 2 (FunSearch-SINDy, no LLM) will first validate the evolutionary search framework using classical mutation operators</li>
+      <li>Project 3 will then replace the mutation step with LLM-guided proposals, using the best equations from Project 2 as seeds</li>
+      <li>See funsearch/roadmap.html for Project 2 progress</li>
+    </ul>
+  </div>
+  <div class="arrow">↓</div>
+
+  <!-- Stage 8 -->
+  <div class="phase-row">
+    <div class="tile future" onclick="toggle(8)">
+      <div class="tile-header"><div class="tile-num">8</div><div class="tile-title">Validation & Publication</div></div>
+      <div class="tile-sub">Hold-out test · forecasting · write-up</div>
+      <div class="progress-bar-wrap"><div class="progress-bar" style="width:0%"></div></div>
+    </div>
+  </div>
+  <div class="detail-panel" id="detail-8">
+    <h3>Stage 8 — Validation & Publication</h3>
+    <ul>
+      <li>Hold-out test: 2023 data kept unseen during all discovery phases</li>
+      <li>Forecast comparison vs baseline SEIR, Prophet, ARIMA</li>
+      <li>Interpretability: what do evolved equations reveal about DR dengue drivers?</li>
+      <li>Write-up for journal or preprint</li>
+    </ul>
+  </div>
+
+</div>
+
+<footer>
+  LLM-FunSearch DR Dengue Project &nbsp;·&nbsp; Double-click to open in browser &nbsp;·&nbsp;
+  <a href="seir_features.csv">seir_features.csv</a> &nbsp;|&nbsp;
+  <a href="results/equations_summary.csv">equations_summary.csv</a>
+</footer>
+
+<script>
+function toggle(id) {
+  const panel = document.getElementById('detail-' + id);
+  if (!panel) return;
+  const isVisible = panel.classList.contains('visible');
+  document.querySelectorAll('.detail-panel').forEach(p => p.classList.remove('visible'));
+  if (!isVisible) panel.classList.add('visible');
+}
+</script>
+
+</body>
+</html>

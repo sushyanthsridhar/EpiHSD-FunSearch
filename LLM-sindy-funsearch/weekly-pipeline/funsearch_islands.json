@@ -1,0 +1,1137 @@
+{
+  "global_best": {
+    "program_id": "99432db7",
+    "n_lags": 6,
+    "extra_terms": [
+      {
+        "term_type": "inc_z_prod",
+        "params": {
+          "lag_inc": 0,
+          "lag_z": 5,
+          "z_idx": 1
+        }
+      },
+      {
+        "term_type": "seasonal",
+        "params": {
+          "use_cos": 1
+        }
+      },
+      {
+        "term_type": "cross_inc",
+        "params": {
+          "lag1": 1,
+          "lag2": 1
+        }
+      },
+      {
+        "term_type": "seasonal",
+        "params": {
+          "use_cos": 1
+        }
+      },
+      {
+        "term_type": "inc_z_prod",
+        "params": {
+          "lag_inc": 5,
+          "lag_z": 5,
+          "z_idx": 3
+        }
+      },
+      {
+        "term_type": "cross_inc",
+        "params": {
+          "lag1": 2,
+          "lag2": 5
+        }
+      }
+    ],
+    "score": 0.6539743319153786,
+    "generation": 68,
+    "parent_id": "98b76a70"
+  },
+  "islands": [
+    {
+      "island_id": 0,
+      "programs": [
+        {
+          "program_id": "99432db7",
+          "n_lags": 6,
+          "extra_terms": [
+            {
+              "term_type": "inc_z_prod",
+              "params": {
+                "lag_inc": 0,
+                "lag_z": 5,
+                "z_idx": 1
+              }
+            },
+            {
+              "term_type": "seasonal",
+              "params": {
+                "use_cos": 1
+              }
+            },
+            {
+              "term_type": "cross_inc",
+              "params": {
+                "lag1": 1,
+                "lag2": 1
+              }
+            },
+            {
+              "term_type": "seasonal",
+              "params": {
+                "use_cos": 1
+              }
+            },
+            {
+              "term_type": "inc_z_prod",
+              "params": {
+                "lag_inc": 5,
+                "lag_z": 5,
+                "z_idx": 3
+              }
+            },
+            {
+              "term_type": "cross_inc",
+              "params": {
+                "lag1": 2,
+                "lag2": 5
+              }
+            }
+          ],
+          "score": 0.6539743319153786,
+          "generation": 68,
+          "parent_id": "98b76a70"
+        },
+        {
+          "program_id": "455a3ca9",
+          "n_lags": 6,
+          "extra_terms": [
+            {
+              "term_type": "inc_z_prod",
+              "params": {
+                "lag_inc": 0,
+                "lag_z": 5,
+                "z_idx": 1
+              }
+            },
+            {
+              "term_type": "seasonal",
+              "params": {
+                "use_cos": 1
+              }
+            },
+            {
+              "term_type": "cross_inc",
+              "params": {
+                "lag1": 1,
+                "lag2": 1
+              }
+            },
+            {
+              "term_type": "seasonal",
+              "params": {
+                "use_cos": 1
+              }
+            },
+            {
+              "term_type": "inc_z_prod",
+              "params": {
+                "lag_inc": 5,
+                "lag_z": 5,
+                "z_idx": 3
+              }
+            },
+            {
+              "term_type": "cross_inc",
+              "params": {
+                "lag1": 2,
+                "lag2": 5
+              }
+            },
+            {
+              "term_type": "cross_inc",
+              "params": {
+                "lag1": 1,
+                "lag2": 1
+              }
+            },
+            {
+              "term_type": "seasonal",
+              "params": {
+                "use_cos": 1
+              }
+            }
+          ],
+          "score": 0.6539743319153786,
+          "generation": 75,
+          "parent_id": "99432db7+99432db7"
+        },
+        {
+          "program_id": "aa96ec47",
+          "n_lags": 6,
+          "extra_terms": [
+            {
+              "term_type": "inc_z_prod",
+              "params": {
+                "lag_inc": 0,
+                "lag_z": 5,
+                "z_idx": 1
+              }
+            },
+            {
+              "term_type": "seasonal",
+              "params": {
+                "use_cos": 1
+              }
+            },
+            {
+              "term_type": "cross_inc",
+              "params": {
+                "lag1": 1,
+                "lag2": 1
+              }
+            },
+            {
+              "term_type": "seasonal",
+              "params": {
+                "use_cos": 1
+              }
+            },
+            {
+              "term_type": "inc_z_prod",
+              "params": {
+                "lag_inc": 5,
+                "lag_z": 5,
+                "z_idx": 3
+              }
+            },
+            {
+              "term_type": "cross_inc",
+              "params": {
+                "lag1": 2,
+                "lag2": 5
+              }
+            },
+            {
+              "term_type": "cross_inc",
+              "params": {
+                "lag1": 1,
+                "lag2": 1
+              }
+            },
+            {
+              "term_type": "seasonal",
+              "params": {
+                "use_cos": 1
+              }
+            }
+          ],
+          "score": 0.6539743319153786,
+          "generation": 78,
+          "parent_id": "455a3ca9+98b76a70"
+        },
+        {
+          "program_id": "99432db7",
+          "n_lags": 6,
+          "extra_terms": [
+            {
+              "term_type": "inc_z_prod",
+              "params": {
+                "lag_inc": 0,
+                "lag_z": 5,
+                "z_idx": 1
+              }
+            },
+            {
+              "term_type": "seasonal",
+              "params": {
+                "use_cos": 1
+              }
+            },
+            {
+              "term_type": "cross_inc",
+              "params": {
+                "lag1": 1,
+                "lag2": 1
+              }
+            },
+            {
+              "term_type": "seasonal",
+              "params": {
+                "use_cos": 1
+              }
+            },
+            {
+              "term_type": "inc_z_prod",
+              "params": {
+                "lag_inc": 5,
+                "lag_z": 5,
+                "z_idx": 3
+              }
+            },
+            {
+              "term_type": "cross_inc",
+              "params": {
+                "lag1": 2,
+                "lag2": 5
+              }
+            }
+          ],
+          "score": 0.6539743319153786,
+          "generation": 68,
+          "parent_id": "98b76a70"
+        },
+        {
+          "program_id": "99432db7",
+          "n_lags": 6,
+          "extra_terms": [
+            {
+              "term_type": "inc_z_prod",
+              "params": {
+                "lag_inc": 0,
+                "lag_z": 5,
+                "z_idx": 1
+              }
+            },
+            {
+              "term_type": "seasonal",
+              "params": {
+                "use_cos": 1
+              }
+            },
+            {
+              "term_type": "cross_inc",
+              "params": {
+                "lag1": 1,
+                "lag2": 1
+              }
+            },
+            {
+              "term_type": "seasonal",
+              "params": {
+                "use_cos": 1
+              }
+            },
+            {
+              "term_type": "inc_z_prod",
+              "params": {
+                "lag_inc": 5,
+                "lag_z": 5,
+                "z_idx": 3
+              }
+            },
+            {
+              "term_type": "cross_inc",
+              "params": {
+                "lag1": 2,
+                "lag2": 5
+              }
+            }
+          ],
+          "score": 0.6539743319153786,
+          "generation": 68,
+          "parent_id": "98b76a70"
+        }
+      ]
+    },
+    {
+      "island_id": 1,
+      "programs": [
+        {
+          "program_id": "99432db7",
+          "n_lags": 6,
+          "extra_terms": [
+            {
+              "term_type": "inc_z_prod",
+              "params": {
+                "lag_inc": 0,
+                "lag_z": 5,
+                "z_idx": 1
+              }
+            },
+            {
+              "term_type": "seasonal",
+              "params": {
+                "use_cos": 1
+              }
+            },
+            {
+              "term_type": "cross_inc",
+              "params": {
+                "lag1": 1,
+                "lag2": 1
+              }
+            },
+            {
+              "term_type": "seasonal",
+              "params": {
+                "use_cos": 1
+              }
+            },
+            {
+              "term_type": "inc_z_prod",
+              "params": {
+                "lag_inc": 5,
+                "lag_z": 5,
+                "z_idx": 3
+              }
+            },
+            {
+              "term_type": "cross_inc",
+              "params": {
+                "lag1": 2,
+                "lag2": 5
+              }
+            }
+          ],
+          "score": 0.6539743319153786,
+          "generation": 68,
+          "parent_id": "98b76a70"
+        },
+        {
+          "program_id": "99432db7",
+          "n_lags": 6,
+          "extra_terms": [
+            {
+              "term_type": "inc_z_prod",
+              "params": {
+                "lag_inc": 0,
+                "lag_z": 5,
+                "z_idx": 1
+              }
+            },
+            {
+              "term_type": "seasonal",
+              "params": {
+                "use_cos": 1
+              }
+            },
+            {
+              "term_type": "cross_inc",
+              "params": {
+                "lag1": 1,
+                "lag2": 1
+              }
+            },
+            {
+              "term_type": "seasonal",
+              "params": {
+                "use_cos": 1
+              }
+            },
+            {
+              "term_type": "inc_z_prod",
+              "params": {
+                "lag_inc": 5,
+                "lag_z": 5,
+                "z_idx": 3
+              }
+            },
+            {
+              "term_type": "cross_inc",
+              "params": {
+                "lag1": 2,
+                "lag2": 5
+              }
+            }
+          ],
+          "score": 0.6539743319153786,
+          "generation": 68,
+          "parent_id": "98b76a70"
+        },
+        {
+          "program_id": "99432db7",
+          "n_lags": 6,
+          "extra_terms": [
+            {
+              "term_type": "inc_z_prod",
+              "params": {
+                "lag_inc": 0,
+                "lag_z": 5,
+                "z_idx": 1
+              }
+            },
+            {
+              "term_type": "seasonal",
+              "params": {
+                "use_cos": 1
+              }
+            },
+            {
+              "term_type": "cross_inc",
+              "params": {
+                "lag1": 1,
+                "lag2": 1
+              }
+            },
+            {
+              "term_type": "seasonal",
+              "params": {
+                "use_cos": 1
+              }
+            },
+            {
+              "term_type": "inc_z_prod",
+              "params": {
+                "lag_inc": 5,
+                "lag_z": 5,
+                "z_idx": 3
+              }
+            },
+            {
+              "term_type": "cross_inc",
+              "params": {
+                "lag1": 2,
+                "lag2": 5
+              }
+            }
+          ],
+          "score": 0.6539743319153786,
+          "generation": 68,
+          "parent_id": "98b76a70"
+        },
+        {
+          "program_id": "99432db7",
+          "n_lags": 6,
+          "extra_terms": [
+            {
+              "term_type": "inc_z_prod",
+              "params": {
+                "lag_inc": 0,
+                "lag_z": 5,
+                "z_idx": 1
+              }
+            },
+            {
+              "term_type": "seasonal",
+              "params": {
+                "use_cos": 1
+              }
+            },
+            {
+              "term_type": "cross_inc",
+              "params": {
+                "lag1": 1,
+                "lag2": 1
+              }
+            },
+            {
+              "term_type": "seasonal",
+              "params": {
+                "use_cos": 1
+              }
+            },
+            {
+              "term_type": "inc_z_prod",
+              "params": {
+                "lag_inc": 5,
+                "lag_z": 5,
+                "z_idx": 3
+              }
+            },
+            {
+              "term_type": "cross_inc",
+              "params": {
+                "lag1": 2,
+                "lag2": 5
+              }
+            }
+          ],
+          "score": 0.6539743319153786,
+          "generation": 68,
+          "parent_id": "98b76a70"
+        },
+        {
+          "program_id": "98b76a70",
+          "n_lags": 6,
+          "extra_terms": [
+            {
+              "term_type": "inc_z_prod",
+              "params": {
+                "lag_inc": 0,
+                "lag_z": 5,
+                "z_idx": 1
+              }
+            },
+            {
+              "term_type": "seasonal",
+              "params": {
+                "use_cos": 1
+              }
+            },
+            {
+              "term_type": "cross_inc",
+              "params": {
+                "lag1": 1,
+                "lag2": 1
+              }
+            },
+            {
+              "term_type": "seasonal",
+              "params": {
+                "use_cos": 1
+              }
+            },
+            {
+              "term_type": "inc_z_prod",
+              "params": {
+                "lag_inc": 5,
+                "lag_z": 5,
+                "z_idx": 3
+              }
+            },
+            {
+              "term_type": "cross_inc",
+              "params": {
+                "lag1": 2,
+                "lag2": 6
+              }
+            }
+          ],
+          "score": 0.6538829524070024,
+          "generation": 52,
+          "parent_id": "5c1998ac"
+        }
+      ]
+    },
+    {
+      "island_id": 2,
+      "programs": [
+        {
+          "program_id": "99432db7",
+          "n_lags": 6,
+          "extra_terms": [
+            {
+              "term_type": "inc_z_prod",
+              "params": {
+                "lag_inc": 0,
+                "lag_z": 5,
+                "z_idx": 1
+              }
+            },
+            {
+              "term_type": "seasonal",
+              "params": {
+                "use_cos": 1
+              }
+            },
+            {
+              "term_type": "cross_inc",
+              "params": {
+                "lag1": 1,
+                "lag2": 1
+              }
+            },
+            {
+              "term_type": "seasonal",
+              "params": {
+                "use_cos": 1
+              }
+            },
+            {
+              "term_type": "inc_z_prod",
+              "params": {
+                "lag_inc": 5,
+                "lag_z": 5,
+                "z_idx": 3
+              }
+            },
+            {
+              "term_type": "cross_inc",
+              "params": {
+                "lag1": 2,
+                "lag2": 5
+              }
+            }
+          ],
+          "score": 0.6539743319153786,
+          "generation": 68,
+          "parent_id": "98b76a70"
+        },
+        {
+          "program_id": "99432db7",
+          "n_lags": 6,
+          "extra_terms": [
+            {
+              "term_type": "inc_z_prod",
+              "params": {
+                "lag_inc": 0,
+                "lag_z": 5,
+                "z_idx": 1
+              }
+            },
+            {
+              "term_type": "seasonal",
+              "params": {
+                "use_cos": 1
+              }
+            },
+            {
+              "term_type": "cross_inc",
+              "params": {
+                "lag1": 1,
+                "lag2": 1
+              }
+            },
+            {
+              "term_type": "seasonal",
+              "params": {
+                "use_cos": 1
+              }
+            },
+            {
+              "term_type": "inc_z_prod",
+              "params": {
+                "lag_inc": 5,
+                "lag_z": 5,
+                "z_idx": 3
+              }
+            },
+            {
+              "term_type": "cross_inc",
+              "params": {
+                "lag1": 2,
+                "lag2": 5
+              }
+            }
+          ],
+          "score": 0.6539743319153786,
+          "generation": 68,
+          "parent_id": "98b76a70"
+        },
+        {
+          "program_id": "99432db7",
+          "n_lags": 6,
+          "extra_terms": [
+            {
+              "term_type": "inc_z_prod",
+              "params": {
+                "lag_inc": 0,
+                "lag_z": 5,
+                "z_idx": 1
+              }
+            },
+            {
+              "term_type": "seasonal",
+              "params": {
+                "use_cos": 1
+              }
+            },
+            {
+              "term_type": "cross_inc",
+              "params": {
+                "lag1": 1,
+                "lag2": 1
+              }
+            },
+            {
+              "term_type": "seasonal",
+              "params": {
+                "use_cos": 1
+              }
+            },
+            {
+              "term_type": "inc_z_prod",
+              "params": {
+                "lag_inc": 5,
+                "lag_z": 5,
+                "z_idx": 3
+              }
+            },
+            {
+              "term_type": "cross_inc",
+              "params": {
+                "lag1": 2,
+                "lag2": 5
+              }
+            }
+          ],
+          "score": 0.6539743319153786,
+          "generation": 68,
+          "parent_id": "98b76a70"
+        },
+        {
+          "program_id": "99432db7",
+          "n_lags": 6,
+          "extra_terms": [
+            {
+              "term_type": "inc_z_prod",
+              "params": {
+                "lag_inc": 0,
+                "lag_z": 5,
+                "z_idx": 1
+              }
+            },
+            {
+              "term_type": "seasonal",
+              "params": {
+                "use_cos": 1
+              }
+            },
+            {
+              "term_type": "cross_inc",
+              "params": {
+                "lag1": 1,
+                "lag2": 1
+              }
+            },
+            {
+              "term_type": "seasonal",
+              "params": {
+                "use_cos": 1
+              }
+            },
+            {
+              "term_type": "inc_z_prod",
+              "params": {
+                "lag_inc": 5,
+                "lag_z": 5,
+                "z_idx": 3
+              }
+            },
+            {
+              "term_type": "cross_inc",
+              "params": {
+                "lag1": 2,
+                "lag2": 5
+              }
+            }
+          ],
+          "score": 0.6539743319153786,
+          "generation": 68,
+          "parent_id": "98b76a70"
+        },
+        {
+          "program_id": "98b76a70",
+          "n_lags": 6,
+          "extra_terms": [
+            {
+              "term_type": "inc_z_prod",
+              "params": {
+                "lag_inc": 0,
+                "lag_z": 5,
+                "z_idx": 1
+              }
+            },
+            {
+              "term_type": "seasonal",
+              "params": {
+                "use_cos": 1
+              }
+            },
+            {
+              "term_type": "cross_inc",
+              "params": {
+                "lag1": 1,
+                "lag2": 1
+              }
+            },
+            {
+              "term_type": "seasonal",
+              "params": {
+                "use_cos": 1
+              }
+            },
+            {
+              "term_type": "inc_z_prod",
+              "params": {
+                "lag_inc": 5,
+                "lag_z": 5,
+                "z_idx": 3
+              }
+            },
+            {
+              "term_type": "cross_inc",
+              "params": {
+                "lag1": 2,
+                "lag2": 6
+              }
+            }
+          ],
+          "score": 0.6538829524070024,
+          "generation": 52,
+          "parent_id": "5c1998ac"
+        }
+      ]
+    },
+    {
+      "island_id": 3,
+      "programs": [
+        {
+          "program_id": "99432db7",
+          "n_lags": 6,
+          "extra_terms": [
+            {
+              "term_type": "inc_z_prod",
+              "params": {
+                "lag_inc": 0,
+                "lag_z": 5,
+                "z_idx": 1
+              }
+            },
+            {
+              "term_type": "seasonal",
+              "params": {
+                "use_cos": 1
+              }
+            },
+            {
+              "term_type": "cross_inc",
+              "params": {
+                "lag1": 1,
+                "lag2": 1
+              }
+            },
+            {
+              "term_type": "seasonal",
+              "params": {
+                "use_cos": 1
+              }
+            },
+            {
+              "term_type": "inc_z_prod",
+              "params": {
+                "lag_inc": 5,
+                "lag_z": 5,
+                "z_idx": 3
+              }
+            },
+            {
+              "term_type": "cross_inc",
+              "params": {
+                "lag1": 2,
+                "lag2": 5
+              }
+            }
+          ],
+          "score": 0.6539743319153786,
+          "generation": 68,
+          "parent_id": "98b76a70"
+        },
+        {
+          "program_id": "99432db7",
+          "n_lags": 6,
+          "extra_terms": [
+            {
+              "term_type": "inc_z_prod",
+              "params": {
+                "lag_inc": 0,
+                "lag_z": 5,
+                "z_idx": 1
+              }
+            },
+            {
+              "term_type": "seasonal",
+              "params": {
+                "use_cos": 1
+              }
+            },
+            {
+              "term_type": "cross_inc",
+              "params": {
+                "lag1": 1,
+                "lag2": 1
+              }
+            },
+            {
+              "term_type": "seasonal",
+              "params": {
+                "use_cos": 1
+              }
+            },
+            {
+              "term_type": "inc_z_prod",
+              "params": {
+                "lag_inc": 5,
+                "lag_z": 5,
+                "z_idx": 3
+              }
+            },
+            {
+              "term_type": "cross_inc",
+              "params": {
+                "lag1": 2,
+                "lag2": 5
+              }
+            }
+          ],
+          "score": 0.6539743319153786,
+          "generation": 68,
+          "parent_id": "98b76a70"
+        },
+        {
+          "program_id": "99432db7",
+          "n_lags": 6,
+          "extra_terms": [
+            {
+              "term_type": "inc_z_prod",
+              "params": {
+                "lag_inc": 0,
+                "lag_z": 5,
+                "z_idx": 1
+              }
+            },
+            {
+              "term_type": "seasonal",
+              "params": {
+                "use_cos": 1
+              }
+            },
+            {
+              "term_type": "cross_inc",
+              "params": {
+                "lag1": 1,
+                "lag2": 1
+              }
+            },
+            {
+              "term_type": "seasonal",
+              "params": {
+                "use_cos": 1
+              }
+            },
+            {
+              "term_type": "inc_z_prod",
+              "params": {
+                "lag_inc": 5,
+                "lag_z": 5,
+                "z_idx": 3
+              }
+            },
+            {
+              "term_type": "cross_inc",
+              "params": {
+                "lag1": 2,
+                "lag2": 5
+              }
+            }
+          ],
+          "score": 0.6539743319153786,
+          "generation": 68,
+          "parent_id": "98b76a70"
+        },
+        {
+          "program_id": "99432db7",
+          "n_lags": 6,
+          "extra_terms": [
+            {
+              "term_type": "inc_z_prod",
+              "params": {
+                "lag_inc": 0,
+                "lag_z": 5,
+                "z_idx": 1
+              }
+            },
+            {
+              "term_type": "seasonal",
+              "params": {
+                "use_cos": 1
+              }
+            },
+            {
+              "term_type": "cross_inc",
+              "params": {
+                "lag1": 1,
+                "lag2": 1
+              }
+            },
+            {
+              "term_type": "seasonal",
+              "params": {
+                "use_cos": 1
+              }
+            },
+            {
+              "term_type": "inc_z_prod",
+              "params": {
+                "lag_inc": 5,
+                "lag_z": 5,
+                "z_idx": 3
+              }
+            },
+            {
+              "term_type": "cross_inc",
+              "params": {
+                "lag1": 2,
+                "lag2": 5
+              }
+            }
+          ],
+          "score": 0.6539743319153786,
+          "generation": 68,
+          "parent_id": "98b76a70"
+        },
+        {
+          "program_id": "62e3a4f1",
+          "n_lags": 6,
+          "extra_terms": [
+            {
+              "term_type": "inc_z_prod",
+              "params": {
+                "lag_inc": 0,
+                "lag_z": 5,
+                "z_idx": 1
+              }
+            },
+            {
+              "term_type": "seasonal",
+              "params": {
+                "use_cos": 1
+              }
+            },
+            {
+              "term_type": "cross_inc",
+              "params": {
+                "lag1": 1,
+                "lag2": 1
+              }
+            },
+            {
+              "term_type": "seasonal",
+              "params": {
+                "use_cos": 1
+              }
+            },
+            {
+              "term_type": "inc_z_prod",
+              "params": {
+                "lag_inc": 5,
+                "lag_z": 5,
+                "z_idx": 3
+              }
+            },
+            {
+              "term_type": "cross_inc",
+              "params": {
+                "lag1": 2,
+                "lag2": 5
+              }
+            },
+            {
+              "term_type": "inc_z_prod",
+              "params": {
+                "lag_inc": 0,
+                "lag_z": 5,
+                "z_idx": 1
+              }
+            },
+            {
+              "term_type": "seasonal",
+              "params": {
+                "use_cos": 1
+              }
+            }
+          ],
+          "score": 0.6539743300527334,
+          "generation": 74,
+          "parent_id": "99432db7+98b76a70"
+        }
+      ]
+    }
+  ],
+  "eval_cache_size": 271,
+  "seed_score": 0.6286065597087145
+}

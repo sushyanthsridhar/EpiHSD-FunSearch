@@ -1,0 +1,45 @@
+LATENT SPACE CLUSTERING  dim=6  best_k=5
+Silhouette scores: {2: 0.26464291338604085, 3: 0.2513675466927187, 4: 0.26161529712201814, 5: 0.28892039810723585, 6: 0.25068321331647253, 7: 0.25912002949552965, 8: 0.26649913727883}
+
+Cluster 0  (3 provinces):
+  02 Azua
+  22 San Juan
+  31 San José de Ocoa
+
+Cluster 1  (6 provinces):
+  03 Baoruco
+  05 Dajabón
+  07 Elías Piña
+  10 Independencia
+  26 Santiago Rodríguez
+  27 Valverde
+
+Cluster 2  (5 provinces):
+  08 El Seibo
+  11 La Altagracia
+  12 La Romana
+  15 Monte Cristi
+  16 Pedernales
+
+Cluster 3  (11 provinces):
+  01 Distrito Nacional
+  04 Barahona
+  09 Espaillat
+  14 María Trinidad Sánchez
+  17 Peravia
+  18 Puerto Plata
+  20 Samaná
+  21 San Cristóbal
+  23 San Pedro de Macorís
+  30 Hato Mayor
+  32 Santo Domingo
+
+Cluster 4  (7 provinces):
+  06 Duarte
+  13 La Vega
+  19 Hermanas Mirabal
+  24 Sánchez Ramírez
+  25 Santiago
+  28 Monseñor Nouel
+  29 Monte Plata
+

@@ -1,0 +1,61 @@
+dI/dt CORRELATION ANALYSIS
+============================================================
+
+WHAT IS dI/dt
+----------------------------------------
+dI/dt is the weekly rate of change of dengue incidence.
+It is the quantity SINDy will learn to model.
+Understanding what drives it tells us which terms
+should appear in the governing equation library.
+
+TOP FEATURES BY PEARSON r (weekly level)
+----------------------------------------
+  dI_dt_norm                          r=+0.9050 (positive)
+  neighbor_incidence_lag2             r=-0.1721 (negative)
+  neighbor_incidence_lag1             r=-0.1644 (negative)
+  school_calendar_active              r=-0.0554 (negative)
+  solar_radiation                     r=+0.0432 (positive)
+  max_rainfall                        r=+0.0414 (positive)
+  extreme_rainfall_binary             r=+0.0401 (positive)
+  avg_temp                            r=+0.0363 (positive)
+  cooling_degree_days                 r=+0.0363 (positive)
+  min_temp                            r=+0.0361 (positive)
+
+KEY FINDINGS
+----------------------------------------
+1. Strongest correlate is dI_dt_norm at r=+0.9050.
+   This should be a primary term in the SINDy library.
+
+2. Features with positive correlation (r > 0.2): 1
+   dI_dt_norm
+
+3. Features with negative correlation (r < -0.2): 0
+
+LAG ANALYSIS SUMMARY
+----------------------------------------
+Lag 0: contemporaneous effect (same week)
+Lag 1: does last week predict this week dI/dt?
+If lag 0 is stronger than lag 1, the relationship is
+concurrent, not predictive. If lag 1 is similar to lag 0,
+there is genuine predictive signal worth including in SINDy.
+
+MOST DYNAMIC PROVINCES (highest mean |dI/dt|)
+----------------------------------------
+  16 Pedernales                       mean |dI/dt| = 0.55459
+  10 Independencia                    mean |dI/dt| = 0.55458
+  08 El Seibo                         mean |dI/dt| = 0.55450
+  28 Monseñor Nouel                   mean |dI/dt| = 0.55449
+  29 Monte Plata                      mean |dI/dt| = 0.55448
+  15 Monte Cristi                     mean |dI/dt| = 0.55447
+  11 La Altagracia                    mean |dI/dt| = 0.55447
+  05 Dajabón                          mean |dI/dt| = 0.55445
+  22 San Juan                         mean |dI/dt| = 0.55445
+  12 La Romana                        mean |dI/dt| = 0.55445
+
+OUTPUTS
+----------------------------------------
+  didt_correlations.csv       full ranked table
+  A_didt_bar_correlations.png bar chart, all features
+  B_didt_scatter_top6.png     scatter top 6 vs dI/dt
+  C_didt_lag_heatmap.png      lag 0-4 week heatmap
+  D_didt_year_breakdown.png   yearly stability of correlations

@@ -1,0 +1,33 @@
+province,dominant_period_wks,spectral_power,peak_month,trough_month,seasonal_ratio,strong_seasonality
+12 La Romana,234.0,2566.35,Aug,Mar,3.629,YES
+30 Hato Mayor,117.0,799.11,Oct,Mar,2.964,YES
+05 Dajabón,468.0,308.34,Aug,Feb,2.632,YES
+22 San Juan,52.0,2203.17,Oct,Mar,2.532,YES
+07 Elías Piña,52.0,101.72,Nov,Jun,2.532,YES
+03 Baoruco,234.0,280.72,Oct,Apr,2.432,YES
+29 Monte Plata,52.0,1110.51,Sep,Apr,2.409,YES
+27 Valverde,234.0,2680.9,Oct,Apr,2.375,YES
+11 La Altagracia,234.0,5109.18,Oct,Mar,2.354,YES
+13 La Vega,234.0,9917.76,Oct,Apr,2.324,YES
+24 Sánchez Ramírez,234.0,3627.87,Oct,Apr,2.274,YES
+28 Monseñor Nouel,52.0,1791.96,Aug,Mar,2.243,YES
+20 Samaná,117.0,285.95,Aug,Mar,2.207,YES
+08 El Seibo,234.0,194.53,Aug,Apr,2.183,YES
+23 San Pedro de Macorís,52.0,1410.85,Oct,Mar,2.145,YES
+06 Duarte,234.0,4435.0,Nov,May,2.099,YES
+21 San Cristóbal,66.9,8992.82,Aug,Apr,2.02,YES
+14 María Trinidad Sánchez,234.0,628.31,Nov,Apr,2.013,YES
+09 Espaillat,52.0,1408.98,Oct,Apr,1.982,YES
+02 Azua,234.0,3308.77,Oct,Apr,1.979,YES
+32 Santo Domingo,234.0,387564.46,Aug,Apr,1.979,YES
+26 Santiago Rodríguez,468.0,232.74,Oct,Mar,1.971,YES
+16 Pedernales,234.0,44.26,Nov,Mar,1.966,YES
+25 Santiago,156.0,69448.17,Nov,Apr,1.963,YES
+31 San José de Ocoa,156.0,1226.37,Aug,Mar,1.947,YES
+19 Hermanas Mirabal,234.0,1162.12,Oct,May,1.896,YES
+18 Puerto Plata,234.0,1948.64,Oct,Jun,1.886,YES
+01 Distrito Nacional,234.0,50154.95,Oct,Apr,1.857,YES
+17 Peravia,156.0,1450.64,Jun,Dec,1.7,YES
+10 Independencia,234.0,541.06,Aug,Oct,1.667,YES
+04 Barahona,234.0,7581.93,Nov,May,1.661,YES
+15 Monte Cristi,234.0,1216.95,Sep,Apr,1.594,YES

@@ -1,0 +1,2 @@
+true_score,null_mean,null_std,z_score,p_value,n_perm,significant
+0.5419,0.5356,0.0073,0.86,0.193,1000,False

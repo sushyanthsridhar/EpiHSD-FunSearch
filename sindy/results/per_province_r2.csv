@@ -1,0 +1,16 @@
+province,split,r2,total_cases
+32 Santo Domingo,test,0.471,21496
+25 Santiago,test,0.5972,9187
+01 Distrito Nacional,test,0.4769,7245
+21 San Cristóbal,test,0.5594,3629
+13 La Vega,test,0.4788,3329
+14 María Trinidad Sánchez,val,0.6223,1127
+30 Hato Mayor,val,0.5124,808
+20 Samaná,val,0.6232,637
+10 Independencia,val,0.5723,625
+03 Baoruco,val,0.5991,578
+26 Santiago Rodríguez,val,0.606,554
+05 Dajabón,val,0.685,521
+08 El Seibo,val,0.6109,380
+07 Elías Piña,val,0.5774,330
+16 Pedernales,val,0.6697,268

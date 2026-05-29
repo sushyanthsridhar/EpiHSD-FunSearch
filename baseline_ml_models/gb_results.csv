@@ -1,0 +1,2 @@
+model,val_r2,val_rmse,test_r2,test_rmse,params
+Gradient Boosting,0.8314,2.5765,0.6645,14.8488,"{'learning_rate': 0.05, 'max_depth': 3}"

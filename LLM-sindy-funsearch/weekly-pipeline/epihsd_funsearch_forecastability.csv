@@ -1,0 +1,33 @@
+province,acf1,zero_pct,forecastable,reason
+01 Distrito Nacional,0.9108,46.8,True,ok
+02 Azua,0.8112,45.1,True,ok
+03 Baoruco,0.6171,52.6,False,acf1_below_threshold
+04 Barahona,0.8129,25.4,True,ok
+05 Dajabón,0.7217,63.5,False,acf1_below_threshold
+06 Duarte,0.8765,54.5,True,ok
+07 Elías Piña,0.5838,68.6,False,acf1_below_threshold
+08 El Seibo,0.6842,69.9,False,acf1_below_threshold
+09 Espaillat,0.8149,50.4,True,ok
+10 Independencia,0.6607,57.3,False,acf1_below_threshold
+11 La Altagracia,0.8887,62.2,True,ok
+12 La Romana,0.814,64.1,True,ok
+13 La Vega,0.9125,58.3,True,ok
+14 María Trinidad Sánchez,0.7797,40.0,True,ok
+15 Monte Cristi,0.6255,42.1,False,acf1_below_threshold
+16 Pedernales,0.3246,70.7,False,acf1_below_threshold
+17 Peravia,0.7649,48.7,True,ok
+18 Puerto Plata,0.7715,50.0,True,ok
+19 Hermanas Mirabal,0.7469,41.0,False,acf1_below_threshold
+20 Samaná,0.6628,53.4,False,acf1_below_threshold
+21 San Cristóbal,0.8806,51.3,True,ok
+22 San Juan,0.8405,57.3,True,ok
+23 San Pedro de Macorís,0.7875,57.7,True,ok
+24 Sánchez Ramírez,0.8327,35.3,True,ok
+25 Santiago,0.9168,44.0,True,ok
+26 Santiago Rodríguez,0.6566,59.2,False,acf1_below_threshold
+27 Valverde,0.8103,43.8,True,ok
+28 Monseñor Nouel,0.7768,40.0,True,ok
+29 Monte Plata,0.7872,44.4,True,ok
+30 Hato Mayor,0.7583,58.3,True,ok
+31 San José de Ocoa,0.7712,41.9,True,ok
+32 Santo Domingo,0.9126,44.2,True,ok

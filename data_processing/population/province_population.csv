@@ -1,0 +1,289 @@
+province,year,population
+01 Distrito Nacional,2015,1007997
+01 Distrito Nacional,2016,1015150
+01 Distrito Nacional,2017,1022236
+01 Distrito Nacional,2018,1029607
+01 Distrito Nacional,2019,1036494
+01 Distrito Nacional,2020,1043186
+01 Distrito Nacional,2021,1049567
+01 Distrito Nacional,2022,1056690
+01 Distrito Nacional,2023,1063514
+02 Azua,2015,219224
+02 Azua,2016,219856
+02 Azua,2017,220470
+02 Azua,2018,221150
+02 Azua,2019,221726
+02 Azua,2020,222256
+02 Azua,2021,222610
+02 Azua,2022,223258
+02 Azua,2023,223797
+03 Baoruco,2015,99244
+03 Baoruco,2016,99607
+03 Baoruco,2017,99964
+03 Baoruco,2018,100348
+03 Baoruco,2019,100687
+03 Baoruco,2020,101005
+03 Baoruco,2021,101306
+03 Baoruco,2022,101664
+03 Baoruco,2023,101998
+04 Barahona,2015,188706
+04 Barahona,2016,188820
+04 Barahona,2017,188929
+04 Barahona,2018,189080
+04 Barahona,2019,189149
+04 Barahona,2020,189177
+04 Barahona,2021,189100
+04 Barahona,2022,189219
+04 Barahona,2023,189263
+05 Dajabón,2015,65271
+05 Dajabón,2016,65519
+05 Dajabón,2017,65760
+05 Dajabón,2018,66017
+05 Dajabón,2019,66249
+05 Dajabón,2020,66467
+05 Dajabón,2021,66675
+05 Dajabón,2022,66918
+05 Dajabón,2023,67146
+06 Duarte,2015,294906
+06 Duarte,2016,295741
+06 Duarte,2017,296558
+06 Duarte,2018,297452
+06 Duarte,2019,298209
+06 Duarte,2020,298913
+06 Duarte,2021,299583
+06 Duarte,2022,300396
+06 Duarte,2023,301147
+07 Elías Piña,2015,63450
+07 Elías Piña,2016,63449
+07 Elías Piña,2017,63438
+07 Elías Piña,2018,63452
+07 Elías Piña,2019,63437
+07 Elías Piña,2020,63402
+07 Elías Piña,2021,63303
+07 Elías Piña,2022,63310
+07 Elías Piña,2023,63278
+08 El Seibo,2015,90676
+08 El Seibo,2016,91256
+08 El Seibo,2017,91826
+08 El Seibo,2018,92418
+08 El Seibo,2019,92973
+08 El Seibo,2020,93508
+08 El Seibo,2021,94049
+08 El Seibo,2022,94616
+08 El Seibo,2023,95169
+09 Espaillat,2015,236467
+09 Espaillat,2016,237169
+09 Espaillat,2017,237855
+09 Espaillat,2018,238608
+09 Espaillat,2019,239252
+09 Espaillat,2020,239845
+09 Espaillat,2021,240428
+09 Espaillat,2022,241113
+09 Espaillat,2023,241751
+10 Independencia,2015,55638
+10 Independencia,2016,56203
+10 Independencia,2017,56763
+10 Independencia,2018,57339
+10 Independencia,2019,57883
+10 Independencia,2020,58424
+10 Independencia,2021,58951
+10 Independencia,2022,59510
+10 Independencia,2023,60056
+11 La Altagracia,2015,314916
+11 La Altagracia,2016,322653
+11 La Altagracia,2017,330367
+11 La Altagracia,2018,338173
+11 La Altagracia,2019,345822
+11 La Altagracia,2020,353406
+11 La Altagracia,2021,360874
+11 La Altagracia,2022,368603
+11 La Altagracia,2023,376227
+12 La Romana,2015,260002
+12 La Romana,2016,262551
+12 La Romana,2017,265084
+12 La Romana,2018,267686
+12 La Romana,2019,270166
+12 La Romana,2020,272597
+12 La Romana,2021,274894
+12 La Romana,2022,277445
+12 La Romana,2023,279898
+13 La Vega,2015,404013
+13 La Vega,2016,405510
+13 La Vega,2017,406990
+13 La Vega,2018,408579
+13 La Vega,2019,409973
+13 La Vega,2020,411290
+13 La Vega,2021,412469
+13 La Vega,2022,413961
+13 La Vega,2023,415328
+14 María Trinidad Sánchez,2015,141372
+14 María Trinidad Sánchez,2016,141331
+14 María Trinidad Sánchez,2017,141284
+14 María Trinidad Sánchez,2018,141275
+14 María Trinidad Sánchez,2019,141200
+14 María Trinidad Sánchez,2020,141097
+14 María Trinidad Sánchez,2021,140954
+14 María Trinidad Sánchez,2022,140911
+14 María Trinidad Sánchez,2023,140827
+15 Monte Cristi,2015,113954
+15 Monte Cristi,2016,114624
+15 Monte Cristi,2017,115278
+15 Monte Cristi,2018,115970
+15 Monte Cristi,2019,116605
+15 Monte Cristi,2020,117221
+15 Monte Cristi,2021,117736
+15 Monte Cristi,2022,118412
+15 Monte Cristi,2023,119029
+16 Pedernales,2015,33439
+16 Pedernales,2016,33755
+16 Pedernales,2017,34070
+16 Pedernales,2018,34391
+16 Pedernales,2019,34694
+16 Pedernales,2020,34997
+16 Pedernales,2021,35280
+16 Pedernales,2022,35594
+16 Pedernales,2023,35897
+17 Peravia,2015,191439
+17 Peravia,2016,192660
+17 Peravia,2017,193869
+17 Peravia,2018,195132
+17 Peravia,2019,196301
+17 Peravia,2020,197434
+17 Peravia,2021,198499
+17 Peravia,2022,199716
+17 Peravia,2023,200872
+18 Puerto Plata,2015,328498
+18 Puerto Plata,2016,329482
+18 Puerto Plata,2017,330439
+18 Puerto Plata,2018,331491
+18 Puerto Plata,2019,332386
+18 Puerto Plata,2020,333221
+18 Puerto Plata,2021,333940
+18 Puerto Plata,2022,334915
+18 Puerto Plata,2023,335788
+19 Hermanas Mirabal,2015,92394
+19 Hermanas Mirabal,2016,92353
+19 Hermanas Mirabal,2017,92311
+19 Hermanas Mirabal,2018,92289
+19 Hermanas Mirabal,2019,92229
+19 Hermanas Mirabal,2020,92148
+19 Hermanas Mirabal,2021,92045
+19 Hermanas Mirabal,2022,92002
+19 Hermanas Mirabal,2023,91935
+20 Samaná,2015,107243
+20 Samaná,2016,108238
+20 Samaná,2017,109226
+20 Samaná,2018,110243
+20 Samaná,2019,111217
+20 Samaná,2020,112160
+20 Samaná,2021,113036
+20 Samaná,2022,114038
+20 Samaná,2023,114991
+21 San Cristóbal,2015,605153
+21 San Cristóbal,2016,611677
+21 San Cristóbal,2017,618165
+21 San Cristóbal,2018,624820
+21 San Cristóbal,2019,631186
+21 San Cristóbal,2020,637429
+21 San Cristóbal,2021,643595
+21 San Cristóbal,2022,650080
+21 San Cristóbal,2023,656427
+22 San Juan,2015,227640
+22 San Juan,2016,226484
+22 San Juan,2017,225318
+22 San Juan,2018,224205
+22 San Juan,2019,222991
+22 San Juan,2020,221736
+22 San Juan,2021,220264
+22 San Juan,2022,219130
+22 San Juan,2023,217872
+23 San Pedro de Macorís,2015,298633
+23 San Pedro de Macorís,2016,299933
+23 San Pedro de Macorís,2017,301215
+23 San Pedro de Macorís,2018,302577
+23 San Pedro de Macorís,2019,303801
+23 San Pedro de Macorís,2020,304966
+23 San Pedro de Macorís,2021,306002
+23 San Pedro de Macorís,2022,307301
+23 San Pedro de Macorís,2023,308497
+24 Sánchez Ramírez,2015,152023
+24 Sánchez Ramírez,2016,152036
+24 Sánchez Ramírez,2017,152027
+24 Sánchez Ramírez,2018,152069
+24 Sánchez Ramírez,2019,152038
+24 Sánchez Ramírez,2020,151978
+24 Sánchez Ramírez,2021,151888
+24 Sánchez Ramírez,2022,151889
+24 Sánchez Ramírez,2023,151852
+25 Santiago,2015,1007808
+25 Santiago,2016,1015397
+25 Santiago,2017,1022916
+25 Santiago,2018,1030721
+25 Santiago,2019,1038044
+25 Santiago,2020,1045169
+25 Santiago,2021,1052088
+25 Santiago,2022,1059625
+25 Santiago,2023,1066904
+26 Santiago Rodríguez,2015,57460
+26 Santiago Rodríguez,2016,57428
+26 Santiago Rodríguez,2017,57390
+26 Santiago Rodríguez,2018,57372
+26 Santiago Rodríguez,2019,57322
+26 Santiago Rodríguez,2020,57266
+26 Santiago Rodríguez,2021,57209
+26 Santiago Rodríguez,2022,57171
+26 Santiago Rodríguez,2023,57125
+27 Valverde,2015,170490
+27 Valverde,2016,171754
+27 Valverde,2017,173011
+27 Valverde,2018,174314
+27 Valverde,2019,175535
+27 Valverde,2020,176720
+27 Valverde,2021,177865
+27 Valverde,2022,179123
+27 Valverde,2023,180335
+28 Monseñor Nouel,2015,170208
+28 Monseñor Nouel,2016,171040
+28 Monseñor Nouel,2017,171865
+28 Monseñor Nouel,2018,172731
+28 Monseñor Nouel,2019,173523
+28 Monseñor Nouel,2020,174278
+28 Monseñor Nouel,2021,174959
+28 Monseñor Nouel,2022,175792
+28 Monseñor Nouel,2023,176565
+29 Monte Plata,2015,188671
+29 Monte Plata,2016,189166
+29 Monte Plata,2017,189649
+29 Monte Plata,2018,190179
+29 Monte Plata,2019,190628
+29 Monte Plata,2020,191033
+29 Monte Plata,2021,191447
+29 Monte Plata,2022,191922
+29 Monte Plata,2023,192367
+30 Hato Mayor,2015,85561
+30 Hato Mayor,2016,85610
+30 Hato Mayor,2017,85653
+30 Hato Mayor,2018,85722
+30 Hato Mayor,2019,85748
+30 Hato Mayor,2020,85762
+30 Hato Mayor,2021,85747
+30 Hato Mayor,2022,85795
+30 Hato Mayor,2023,85818
+31 San José de Ocoa,2015,57096
+31 San José de Ocoa,2016,56565
+31 San José de Ocoa,2017,56027
+31 San José de Ocoa,2018,55511
+31 San José de Ocoa,2019,54960
+31 San José de Ocoa,2020,54405
+31 San José de Ocoa,2021,53833
+31 San José de Ocoa,2022,53299
+31 San José de Ocoa,2023,52750
+32 Santo Domingo,2015,2650651
+32 Santo Domingo,2016,2702028
+32 Santo Domingo,2017,2753219
+32 Santo Domingo,2018,2805228
+32 Santo Domingo,2019,2855892
+32 Santo Domingo,2020,2906003
+32 Santo Domingo,2021,2955339
+32 Santo Domingo,2022,3006641
+32 Santo Domingo,2023,3057142

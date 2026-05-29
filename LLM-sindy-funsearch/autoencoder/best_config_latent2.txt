@@ -1,0 +1,19 @@
+BEST HYPERPARAMETER CONFIG  latent_dim=2
+========================================
+val_r2         : 0.8001
+hidden_dims    : [512, 128, 1024]
+n_layers        : 3
+h0              : 512
+h1              : 128
+h2              : 1024
+pre_bottleneck  : 4
+shallow_decoder : True
+use_batchnorm   : False
+lr              : 0.00414481060908899
+dropout         : 0.2135042069210987
+weight_decay    : 0.0004296695021555282
+batch_size      : 32
+activation      : relu
+mse_weight      : 0.3359174184232744
+
+NOTE: test data was never used during tuning.

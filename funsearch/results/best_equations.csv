@@ -1,0 +1,3 @@
+island,window,val_years,test_years,val_r2,test_r2,n_terms,equation
+A_coastal,1,"[2020, 2021]","[2022, 2023]",0.6526,0.5277,10,dI/dt = 0.8796 rolling_incidence_4wk  - 0.6444 incidence_lag2  - 0.1718 incidence_lag4  - 0.0569 incidence_lag1 temp_lag4  + 0.0543 incidence_lag1 EIP  + 0.0525 temp_lag4 rolling_incidence_4wk  - 0.0520 incidence_lag2 week_cos  - 0.0245 week_cos  - 0.0149 week_sin  - 0.0091 EIP incidence_lag4
+B_inland,1,"[2020, 2021]","[2022, 2023]",0.697,0.5515,9,dI/dt = 2.1117 rolling_incidence_4wk  - 1.4402 incidence_lag1  - 0.3525 incidence_lag2  - 0.1072 incidence_lag4  - 0.0235 rolling_incidence_4wk week_sin  - 0.0078 rainfall_lag3 week_sin  - 0.0031 avg_humidity incidence_lag2  + 0.0018 rainfall_lag3 incidence_lag2  - 0.0012 incidence_lag1 rainfall_lag3

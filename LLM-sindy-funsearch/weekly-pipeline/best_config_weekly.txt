@@ -1,0 +1,19 @@
+BEST WEEKLY AUTOENCODER CONFIG  latent_dim=6
+========================================
+val_r2         : 0.8696
+input_dim      : 33
+hidden_dims    : [512, 256]
+n_params       : 303655
+n_layers        : 2
+h0              : 512
+h1              : 256
+use_batchnorm   : True
+lr              : 0.0021787561683295777
+dropout         : 0.1580004106267267
+weight_decay    : 0.0003287942127246158
+batch_size      : 64
+activation      : leakyrelu
+mse_weight      : 0.2600105276233434
+optimizer       : adamw
+
+NOTE: test data 2022-2023 was never used during tuning.

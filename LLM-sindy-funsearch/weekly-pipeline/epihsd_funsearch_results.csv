@@ -1,0 +1,9 @@
+level,id,n_units,val_r2_latent,test_r2_latent,val_r2_inc,test_r2_inc,delta_terms,selection
+global,all,32,0.8554,0.7993,0.4959,0.3938,,
+cluster,0,3,0.8232,0.7428,0.4158,0.3516,4.0,global
+cluster,1,6,0.8502,0.7933,0.2367,0.3495,0.0,global
+cluster,2,5,0.8857,0.8221,0.3173,0.2121,0.0,global
+cluster,3,11,0.8465,0.7978,0.6163,0.4248,0.0,global
+cluster,4,7,0.866,0.8147,0.6905,0.531,0.0,global
+province_all32,all,32,0.8289,0.7711,0.4959,0.3938,,
+province_forecastable22,acf1_gte_0.75,22,0.8224,0.7662,0.5789,0.4559,,
