@@ -1,2 +1,0 @@
-fitness,n_islands,sa_t_initial,sa_t_final,generations_per_epoch,early_stop_patience,max_terms,r2_weight,n_llm_suggestions,p_add,p_remove,p_swap,p_perturb,sa_cooling_rate
-0.7917850132820146,6,1.182796147334278,0.00037665491540576695,125,50,7,0.5102934674473687,3,0.32609527574168873,0.21833492927169,0.4056,0.05,0.937614

@@ -1,2 +1,0 @@
-equation,n_terms,val_fitness,mean_r2_test,mean_r2_sindy,delta_test,n_provinces,n_islands
-dI/dt = - 0.2214 incidence_lag4  + 0.0879 temp_lag4 rolling_incidence_4wk  - 0.0569 incidence_lag1 temp_lag4  + 0.0303 incidence_lag1 EIP  - 0.0241 temp_lag4 incidence_lag2,5,0.7964263891048801,0.5419,0.4892,0.0527,11,6

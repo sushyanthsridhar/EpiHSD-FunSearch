@@ -1,2 +1,0 @@
-equation,threshold,n_nonzero,n_total,sparsity,r2_train_pooled,r2_val_pooled,r2_test_pooled
--1.3985 incidence_lag1 + -0.6001 incidence_lag2 +  1.9985 rolling_incidence_4wk,0.1611,3,66,0.9545,0.671,0.6161,0.4285

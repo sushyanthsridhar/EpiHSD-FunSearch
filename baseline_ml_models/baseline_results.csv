@@ -1,7 +1,0 @@
-model,val_r2,val_rmse,test_r2,test_rmse,params
-Lasso,0.8348,2.5507,0.6892,14.2915,{'alpha': 1}
-Random Forest,0.827,2.6096,0.6658,14.8183,"{'max_depth': 10, 'min_samples_leaf': 5}"
-Gradient Boosting,0.8314,2.5765,0.6645,14.8488,"{'learning_rate': 0.05, 'max_depth': 3}"
-Linear Regression,0.8173,2.682,0.6113,15.9827,{}
-Ridge,0.8268,2.6112,0.563,16.9452,{'alpha': 1000}
-SVR,0.7917,2.8635,0.2698,21.9053,"{'C': 10.0, 'epsilon': 0.1}"

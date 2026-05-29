@@ -1,2 +1,0 @@
-model,val_r2,val_rmse,test_r2,test_rmse,params
-Random Forest,0.827,2.6096,0.6658,14.8183,"{'max_depth': 10, 'min_samples_leaf': 5}"
